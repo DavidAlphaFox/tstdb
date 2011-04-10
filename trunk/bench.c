@@ -3,6 +3,11 @@
 #include <string.h>
 #include "tst.h"
 int main(int argc, char* argv[]){
+	if(argc<2){
+		printf("./bench need arguments : r or w\n");
+	        exit(1);	
+	}
+
 	tst_db * db = tst_open("a.db");
 	int i;
 	unsigned int len_of_v;
