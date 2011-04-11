@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-tst_db* new_tst_db(uint32 cap){
+static tst_db* new_tst_db(uint32 cap){
 	tst_db* db = (tst_db*)malloc(sizeof(tst_db));
 	db->size = 0 ;
 	db->root = 0 ;
@@ -13,11 +13,11 @@ tst_db* new_tst_db(uint32 cap){
 	return db;
 }
 
-tst_db* create_tst_db(){
+static tst_db* create_tst_db(){
 	return new_tst_db(409600);
 }
 
-void free_tst_db(tst_db* db){
+static void free_tst_db(tst_db* db){
 	if(db!=NULL){
 		if(db->data!=NULL){
 			free(db->data);
@@ -26,7 +26,7 @@ void free_tst_db(tst_db* db){
 	}
 }
 
-void ensure_enough_space(tst_db *db){
+static void ensure_enough_space(tst_db *db){
 	tst_node * new_p;
 	if(db!=NULL){
 		//printf("%d,%d\n",db->size,db->cap);
@@ -45,7 +45,7 @@ void ensure_enough_space(tst_db *db){
 	}	
 }
 
-uint32 new_node(tst_db *db){
+static uint32 new_node(tst_db *db){
 	ensure_enough_space(db);
 	db->size++;
 	memset(&db->data[db->size],0,sizeof(tst_node));
@@ -53,7 +53,7 @@ uint32 new_node(tst_db *db){
 	return db->size;
 }
 
-uint32 insert(tst_db *db, uint32 node, const char* s, uint64 value, int d,int len_of_s,char small_value_len){
+static uint32 insert(tst_db *db, uint32 node, const char* s, uint64 value, int d,int len_of_s,char small_value_len){
 	char c = s[d];
 	uint32 x= node,no;
 	if(x==0){
@@ -91,7 +91,7 @@ uint32 insert(tst_db *db, uint32 node, const char* s, uint64 value, int d,int le
 	return x;
 }
 
-uint32 search(tst_db *db, uint32 node, const char* s, int d,int len_of_s){
+static uint32 search(tst_db *db, uint32 node, const char* s, int d,int len_of_s){
 	tst_node * data = db->data;
 	//printf("->%d,%s\n",node,s+d);
 	if(node<=0)return 0;
@@ -105,23 +105,18 @@ uint32 search(tst_db *db, uint32 node, const char* s, int d,int len_of_s){
 	else return node; 	
 }
 
-void put(tst_db* db,const char* key,uint64 value,char small_value_len){
+static void put(tst_db* db,const char* key,uint64 value,char small_value_len){
 	int len_of_key = strlen(key);
 	if(len_of_key<=0)return;
 	db->root = insert(db,db->root,key,value,0,len_of_key,small_value_len);
 }
 
-uint32 get_node(tst_db* db, const char* key){
+
+static uint32 get_node(tst_db* db, const char* key){
 	int len_of_key = strlen(key);
 	if(len_of_key<=0)return 0;
 	uint32 node = search(db,db->root,key,0,len_of_key);
 	return node;
-}
-
-long get(tst_db *db,const char* key){
-	uint32 node = get_node(db,key);
-	if(node == 0) return -1;
-	return db->data[node].value;		
 }
 
 tst_db* tst_open(const char* full_file_name){
