@@ -53,7 +53,7 @@ uint32 new_node(tst_db *db){
 	return db->size;
 }
 
-uint32 insert(tst_db *db, uint32 node, const char* s, uint64 value, int d,int len_of_s){
+uint32 insert(tst_db *db, uint32 node, const char* s, uint64 value, int d,int len_of_s,char small_value_len){
 	char c = s[d];
 	uint32 x= node,no;
 	if(x==0){
@@ -67,24 +67,25 @@ uint32 insert(tst_db *db, uint32 node, const char* s, uint64 value, int d,int le
 	//printf("d:  %d\n",d);
 	if (c<db->data[x].c) {
 		 //printf("choice a\n");
-		 no  = insert(db,db->data[x].left,s,value,d,len_of_s);
+		 no  = insert(db,db->data[x].left,s,value,d,len_of_s,small_value_len);
 		 db->data[x].left  = no;
 	}
 	else if(c>db->data[x].c){
 		//printf("choice b\n");
-		 no= insert(db,db->data[x].right,s,value,d,len_of_s);
+		 no= insert(db,db->data[x].right,s,value,d,len_of_s,small_value_len);
 		db->data[x].right = no; 
 	}
 	else if(d<len_of_s-1) {
 		
 		//printf("choice c\n");
-		no = insert(db,db->data[x].mid,s,value,d+1,len_of_s);
+		no = insert(db,db->data[x].mid,s,value,d+1,len_of_s,small_value_len);
 		db->data[x].mid = no;
 	}
 	else{
 			
 		//printf("choice d\n");
 		 db->data[x].value = value;
+		 db->data[x].small_value_len = small_value_len;
 	}
 	return x;
 }
@@ -103,18 +104,21 @@ uint32 search(tst_db *db, uint32 node, const char* s, int d,int len_of_s){
 	else return node; 	
 }
 
-void put(tst_db* db,const char* key,uint64 value){
+void put(tst_db* db,const char* key,uint64 value,char small_value_len){
 	int len_of_key = strlen(key);
 	if(len_of_key<=0)return;
-	db->root = insert(db,db->root,key,value,0,len_of_key);
+	db->root = insert(db,db->root,key,value,0,len_of_key,small_value_len);
+}
+
+uint32 get_node(tst_db* db, const char* key){
+	int len_of_key = strlen(key);
+	if(len_of_key<=0)return 0;
+	uint32 node = search(db,db->root,key,0,len_of_key);
+	return node;
 }
 
 long get(tst_db *db,const char* key){
-	int len_of_key = strlen(key);
-	if(len_of_key<=0)return -1;
-	//printf("db root: %d\n",db->root);
-	uint32 node = search(db,db->root,key,0,len_of_key);
-	//printf("search result node: %d\n",node);
+	uint32 node = get_node(db,key);
 	if(node == 0) return -1;
 	return db->data[node].value;		
 }
@@ -125,7 +129,7 @@ tst_db* tst_open(const char* full_file_name){
 	int tmp_len_of_key,ct_read=0,ct_record=0;
 	int tmp_len_of_value;
 	char key_buf[256];
-	uint64 tmp_cur;
+	uint64 tmp_cur,tmp_small_value;
 
 	if(file_ptr==NULL){//not exists;
 		file_ptr = fopen(full_file_name,"wb");
@@ -157,8 +161,15 @@ tst_db* tst_open(const char* full_file_name){
 		fread(&tmp_len_of_value,sizeof(int),1,db->read_file_ptr);
 		fread(key_buf,1,tmp_len_of_key,db->read_file_ptr);
 		key_buf[tmp_len_of_key]='\0';
-		fseek(db->read_file_ptr,tmp_len_of_value,SEEK_CUR);			
-		put(db,key_buf,tmp_cur);
+		if(tmp_len_of_value>sizeof(uint64)){
+			fseek(db->read_file_ptr,tmp_len_of_value,SEEK_CUR);			
+			put(db,key_buf,tmp_cur,0);
+		}else{
+
+			tmp_small_value = 0 ;
+			fread(&tmp_small_value,1,tmp_len_of_value,db->read_file_ptr);
+			put(db,key_buf,tmp_small_value,(char)tmp_len_of_value);
+		}
 		ct_record++;
 		if(ct_record%20000==0){
 			printf(">> %d records loaded\n",ct_record);
@@ -182,6 +193,7 @@ void tst_close(tst_db* db){
 void tst_put(tst_db* db, const char* key, const char* value, uint32 len_of_value){
 	uint64 old_cur = ftell(db->write_file_ptr);		
 	int len_of_key = strlen(key);
+	uint64 tmp_value;
 	if(len_of_key<=0 || len_of_key>255)return;
 	if(db->ready!=1)return;
 	if(db->write_file_ptr){
@@ -189,28 +201,40 @@ void tst_put(tst_db* db, const char* key, const char* value, uint32 len_of_value
 		fwrite(&len_of_value,sizeof(int),1,db->write_file_ptr);
 		fwrite(key,1,len_of_key,db->write_file_ptr);
 		fwrite(value,1,len_of_value,db->write_file_ptr);	
-		put(db,key,old_cur);
+		if(len_of_value>sizeof(uint64)){
+			put(db,key,old_cur,0);
+		}else{
+			tmp_value = 0 ;
+			memcpy(&tmp_value,value,len_of_value);
+			put(db,key,tmp_value,(char)len_of_value);		
+		}
 	}
 }
 
 void tst_get(tst_db* db, const char* key, char * value, uint32* len_of_value_ptr){
-	long cur = get(db,key);
+	uint32 node = get_node(db,key);
 	int len_of_key;
 	int len_of_value; 
+	uint64 cur;
+
 	if(db->ready!=1)return;
-	//printf("read cur:%lu\n",cur);
-	//printf("write cur:%lu\n",ftell(db->write_file_ptr));
 	ftell(db->write_file_ptr);
-	if(cur==-1){//not exists
+	if(node==0){//not exists
 		*len_of_value_ptr = 0;	
 	}	
 	else{
-		fseek(db->read_file_ptr,cur,SEEK_SET);
-		fread(&len_of_key,sizeof(int),1,db->read_file_ptr);
-		fread(&len_of_value,sizeof(int),1,db->read_file_ptr);
-		fseek(db->read_file_ptr,len_of_key,SEEK_CUR);
-		fread(value,1,len_of_value,db->read_file_ptr);	
-		*len_of_value_ptr = len_of_value;
+		if(db->data[node].small_value_len==0){
+			cur = db->data[node].value;
+			fseek(db->read_file_ptr,cur,SEEK_SET);
+			fread(&len_of_key,sizeof(int),1,db->read_file_ptr);
+			fread(&len_of_value,sizeof(int),1,db->read_file_ptr);
+			fseek(db->read_file_ptr,len_of_key,SEEK_CUR);
+			fread(value,1,len_of_value,db->read_file_ptr);	
+			*len_of_value_ptr = len_of_value;
+		}else{
+			*len_of_value_ptr = (uint32)db->data[node].small_value_len;
+			memcpy(value,(char*)&(db->data[node].value),*len_of_value_ptr);
+		}
 	}		
 }
 
