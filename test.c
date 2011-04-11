@@ -10,9 +10,9 @@ int main(){
 	tst_put(db,"-sdf","456",3);
 	tst_put(db,"xxx","789",3);
 
-	tst_put(db,"xxx","123",3);
+	tst_put(db,"xxx","12345",5);
 	tst_put(db,"-sdf","222",3);
-	tst_put(db,"123","333",3);
+	tst_put(db,"123","3337",4);
 
 	tst_get(db,"123",value,&len_of_value);
 	printf("%s \t %d\n",value,len_of_value);
@@ -20,6 +20,8 @@ int main(){
 	printf("%s \t %d\n",value,len_of_value);
 	tst_get(db,"xxx",value,&len_of_value);
 	printf("%s \t %d\n",value,len_of_value);
+	len_of_value = 0 ;
+	memset(value,0,sizeof(value));
 	tst_put(db,"xxx","",0);
 	tst_get(db,"xxx",value,&len_of_value);
 	printf("%s \t %d\n",value,len_of_value);
