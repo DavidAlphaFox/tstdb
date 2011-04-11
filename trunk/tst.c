@@ -86,6 +86,7 @@ uint32 insert(tst_db *db, uint32 node, const char* s, uint64 value, int d,int le
 		//printf("choice d\n");
 		 db->data[x].value = value;
 		 db->data[x].small_value_len = small_value_len;
+		 //printf("==%llu\n",value);
 	}
 	return x;
 }
@@ -223,7 +224,7 @@ void tst_get(tst_db* db, const char* key, char * value, uint32* len_of_value_ptr
 		*len_of_value_ptr = 0;	
 	}	
 	else{
-		if(db->data[node].small_value_len==0){
+		if(db->data[node].small_value_len==0 && db->data[node].value!=0){
 			cur = db->data[node].value;
 			fseek(db->read_file_ptr,cur,SEEK_SET);
 			fread(&len_of_key,sizeof(int),1,db->read_file_ptr);
