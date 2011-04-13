@@ -29,9 +29,20 @@
 
 #define MAX_EPOLL_FD 4096
 #define IN_BUF_SIZE 500
+
 int ep_fd;
 tst_db *g_db;
+char big_buffer[1<<20];// the longest value in memcached is 1MB
 
+typedef struct{
+	char * buf;
+	char * putkey;
+	int need_read;
+	int need_write;
+	int cur;
+}payload_t;
+
+payload_t dataTable[32767];
 
 static void *handle_func(void *);
 static void setnonblocking(int fd)
@@ -68,7 +79,7 @@ int main(int argc, char **argv)
 	pthread_t tid;
 	pthread_attr_t attr;
 
-	while ((opt = getopt(argc, argv, "l:p:fh")) != -1) {
+	while ((opt = getopt(argc, argv, "l:p:f:h")) != -1) {
 		switch (opt) {
 		case 'l':
 			ip_binding = strdup(optarg);
@@ -110,7 +121,7 @@ int main(int argc, char **argv)
 	}
 
 
-
+	bzero(dataTable,sizeof(dataTable));
 	ep_fd = epoll_create(MAX_EPOLL_FD);
 
 	pthread_attr_init(&attr);
@@ -127,7 +138,7 @@ int main(int argc, char **argv)
 		       &client_n)) > 0) {
 		setnonblocking(client_fd);
 		ev.data.fd = client_fd;
-		ev.events = EPOLLIN | EPOLLET;
+		ev.events = EPOLLIN;
 		epoll_ctl(ep_fd, EPOLL_CTL_ADD, client_fd, &ev);
 		//printf("connection from %s\n",inet_ntoa(client_addr.sin_addr));
 
@@ -138,34 +149,140 @@ int main(int argc, char **argv)
 
 static void *handle_func(void *p)
 {
-	int i, ret, cfd, nfds;;
+	int i, ret, cfd, nfds;
 	struct epoll_event ev, events[MAX_EPOLL_FD];
 	char buffer[IN_BUF_SIZE];
-
-	char *rsps_msg =
+	int flag,expire,total,read_count,header_len;
+	unsigned int len_of_value;
+	char key[256]={0};	
+	char rsps_msg[256] =
 	    "HTTP/1.1 200 OK\r\nContent-Length: 5\r\nConnection: close\r\nContent-Type: text/html\r\n\r\nHello";
+
 	while (1) {
 		nfds = epoll_wait(ep_fd, events, MAX_EPOLL_FD, -1);
 
 		for (i = 0; i < nfds; i++) {
+			bzero(buffer,sizeof(buffer));
 			if (events[i].events & EPOLLIN) {
 				cfd = events[i].data.fd;
+				ret = 0;
 				ret = recv(cfd, buffer, sizeof(buffer), 0);
+				if(ret<0){
+					ev.data.fd = cfd;
+				       	epoll_ctl(ep_fd,EPOLL_CTL_DEL,cfd,&ev);
+					close(cfd);
+					continue;
+				}
+				read_count = ret;
+				if(dataTable[cfd].buf!=NULL && dataTable[cfd].need_read>0){
+					memcpy(dataTable[cfd].buf+dataTable[cfd].cur,buffer,read_count);
+					dataTable[cfd].cur += read_count;
+					//printf("%d,%d\n",dataTable[cfd].cur,read_count);
+					if(dataTable[cfd].cur>=dataTable[cfd].need_read){
+						//printf("kkkkk\n");
+						tst_put(g_db,dataTable[cfd].putkey,dataTable[cfd].buf,dataTable[cfd].need_read);
+						ret = send(cfd,"STORED\r\n",8,MSG_NOSIGNAL);		
 
-				ev.data.fd = cfd;
-				ev.events = EPOLLOUT | EPOLLET;
-				epoll_ctl(ep_fd, EPOLL_CTL_MOD, cfd, &ev);
+						free(dataTable[cfd].buf);
+						free(dataTable[cfd].putkey);
+						bzero(&dataTable[cfd],sizeof(payload_t));
+
+						if(ret<0){
+					        	ev.data.fd = cfd;
+				        		epoll_ctl(ep_fd,EPOLL_CTL_DEL,cfd,&ev);
+							close(cfd);
+						}	
+					}		
+				}
+				else if( sscanf(buffer,"get %s",key) == 1 ){
+					//printf("client want to get %s\n",key);	
+					tst_get(g_db,key,big_buffer,&len_of_value);		
+					//printf("v len:%d\n",len_of_value);
+					if(len_of_value==0){
+						ret = send(cfd,"END\r\n",5,MSG_NOSIGNAL);
+						if(ret<0){
+                                                 	ev.data.fd = cfd;
+                                                 	epoll_ctl(ep_fd,EPOLL_CTL_DEL,cfd,&ev);
+                                                 	close(cfd);
+                                         	}
+						continue;
+					}
+					sprintf(rsps_msg,"VALUE %s 0 %d\r\n",key,len_of_value);					
+					header_len = strlen(rsps_msg);
+					dataTable[cfd].buf = (char*)malloc(len_of_value+header_len+7);
+					memcpy(dataTable[cfd].buf,rsps_msg,header_len);
+					dataTable[cfd].cur = 0;
+					dataTable[cfd].need_write = len_of_value+header_len+7;
+					memcpy(dataTable[cfd].buf+header_len,big_buffer,len_of_value);
+					memcpy(dataTable[cfd].buf+header_len+len_of_value,"\r\nEND\r\n",7);
+					ev.data.fd = cfd;
+					ev.events = EPOLLOUT;
+					epoll_ctl(ep_fd, EPOLL_CTL_MOD, cfd, &ev);		
+				}
+				else if(sscanf(buffer,"set %s %d %d %d\r\n",key,&flag,&expire,&total)==4){
+					//printf("client want to put %s\n",key);
+					//printf("flag: %d\n",flag);
+					//printf("expire: %d\n",expire);
+					//printf("total: %d\n",total);
+					header_len = strstr(buffer,"\r\n")-buffer+2; 
+					//printf("header_len:%d\n",header_len);
+					//printf("read_count:%d\n",read_count);
+					if(header_len+total<read_count){//one round enough
+						tst_put(g_db,key,buffer+header_len,total);
+						ret = send(cfd,"STORED\r\n",8,MSG_NOSIGNAL);		
+						if(ret<0){
+					        	ev.data.fd = cfd;
+				        		epoll_ctl(ep_fd,EPOLL_CTL_DEL,cfd,&ev);
+							close(cfd);
+						}
+					}
+
+					else{
+						//printf("need more rounds to receiv\n");
+						dataTable[cfd].buf = (char*)malloc(total+2);
+						memcpy(dataTable[cfd].buf,buffer+header_len,read_count-header_len);
+						dataTable[cfd].cur = read_count-header_len;
+						dataTable[cfd].putkey = strdup(key);
+						dataTable[cfd].need_read = total;
+					}
+				}
+				else{
+					printf("%s\n",buffer);
+					ret = send(cfd,"ERROR\r\n",7,MSG_NOSIGNAL);
+					if(ret<0){
+					        ev.data.fd = cfd;
+				        	epoll_ctl(ep_fd,EPOLL_CTL_DEL,cfd,&ev);
+						close(cfd);
+					}
+				}
+				
 			} else if (events[i].events & EPOLLOUT) {
 				cfd = events[i].data.fd;
 				ret =
-				    send(cfd, rsps_msg, strlen(rsps_msg),
-					 0);
-
-				ev.data.fd = cfd;
-				epoll_ctl(ep_fd, EPOLL_CTL_DEL, cfd, &ev);
-
-				close(cfd);
-
+				    send(cfd, dataTable[cfd].buf+dataTable[cfd].cur, 
+					      dataTable[cfd].need_write-dataTable[cfd].cur,
+					 MSG_NOSIGNAL);
+				//printf("sent %d\n",ret);
+				if(ret<0){
+					if(errno == EAGAIN || errno == EWOULDBLOCK){
+						continue;
+					}else{
+						free(dataTable[cfd].buf);
+						bzero(&dataTable[cfd],sizeof(payload_t));
+						ev.data.fd = cfd;
+						epoll_ctl(ep_fd,EPOLL_CTL_DEL,cfd,&ev);
+						close(cfd);
+						continue;
+					}
+				}
+				dataTable[cfd].cur += ret;
+				if(dataTable[cfd].cur == dataTable[cfd].need_write){
+					free(dataTable[cfd].buf);
+					bzero(&dataTable[cfd],sizeof(payload_t));
+					ev.data.fd = cfd;
+					ev.events = EPOLLIN;
+					epoll_ctl(ep_fd,EPOLL_CTL_MOD,cfd,&ev);	
+				}	
 			}
 		}
 	}

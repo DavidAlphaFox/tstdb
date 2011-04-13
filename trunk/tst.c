@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#define MAGIC_NUMBER 1984
 
 static tst_db *new_tst_db(uint32 cap)
 {
@@ -149,6 +150,8 @@ tst_db *tst_open(const char *full_file_name)
 	int tmp_len_of_key, ct_read = 0, ct_record = 0;
 	int tmp_len_of_value;
 	char key_buf[256];
+	int check_number;
+
 	uint64 tmp_cur, tmp_small_value;
 
 	if (file_ptr == NULL) {	//not exists;
@@ -162,17 +165,27 @@ tst_db *tst_open(const char *full_file_name)
 			db = create_tst_db();
 			db->read_file_ptr = fopen(full_file_name, "rb");
 			db->write_file_ptr = fopen(full_file_name, "ab");
+			check_number = MAGIC_NUMBER;
+			fwrite(&check_number,sizeof(int),1,db->write_file_ptr);
 		}
 	} else {
 		db = create_tst_db();
 		db->read_file_ptr = fopen(full_file_name, "rb");
 		db->write_file_ptr = fopen(full_file_name, "ab");
 	}
+		
 	printf(">> db loading...\n");
 	fseek(db->read_file_ptr, 0, SEEK_SET);
+	fread(&check_number,sizeof(int),1,db->read_file_ptr);
+	if(check_number!=MAGIC_NUMBER){
+		printf("%s is not a valid tstdb file\n",full_file_name);
+		exit(1);
+	}
+	fseek(db->read_file_ptr,4,SEEK_SET);
+	fseek(db->write_file_ptr,4,SEEK_SET);
+
 	while (1) {
 		tmp_cur = ftell(db->read_file_ptr);
-		//printf("pos:%lu\n",tmp_cur);
 		ct_read =
 		    fread(&tmp_len_of_key, sizeof(int), 1,
 			  db->read_file_ptr);
@@ -181,11 +194,14 @@ tst_db *tst_open(const char *full_file_name)
 		}
 		fread(&tmp_len_of_value, sizeof(int), 1,
 		      db->read_file_ptr);
+		//printf("key len:%d\n",tmp_len_of_key);
+		//printf("value len:%d\n",tmp_len_of_value);
 		fread(key_buf, 1, tmp_len_of_key, db->read_file_ptr);
 		key_buf[tmp_len_of_key] = '\0';
 		if (tmp_len_of_value > sizeof(uint64)) {
 			fseek(db->read_file_ptr, tmp_len_of_value,
 			      SEEK_CUR);
+			//printf("tmp_cur: %d\n",tmp_cur);
 			put(db, key_buf, tmp_cur, 0);
 		} else {
 
@@ -248,7 +264,9 @@ void tst_get(tst_db * db, const char *key, char *value,
 	int len_of_key;
 	int len_of_value;
 	uint64 cur;
-
+	//printf("try to find key: %s,len:%d\n",key,strlen(key));
+	//printf("small value %d\n",db->data[node].small_value_len);
+	//printf("node value %llu\n",db->data[node].value);
 	if (db->ready != 1)
 		return;
 	ftell(db->write_file_ptr);
