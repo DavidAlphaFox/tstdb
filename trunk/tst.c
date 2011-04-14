@@ -167,6 +167,7 @@ tst_db *tst_open(const char *full_file_name)
 			db->write_file_ptr = fopen(full_file_name, "ab");
 			check_number = MAGIC_NUMBER;
 			fwrite(&check_number,sizeof(int),1,db->write_file_ptr);
+			fflush(db->write_file_ptr);
 		}
 	} else {
 		db = create_tst_db();
@@ -182,7 +183,6 @@ tst_db *tst_open(const char *full_file_name)
 		exit(1);
 	}
 	fseek(db->read_file_ptr,4,SEEK_SET);
-	fseek(db->write_file_ptr,4,SEEK_SET);
 
 	while (1) {
 		tmp_cur = ftell(db->read_file_ptr);
