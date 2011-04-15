@@ -67,6 +67,7 @@ static void setnonblocking(int fd)
 
 static void exit_hook(int number)
 {
+	close(ep_fd);
 	tst_close(g_db);
 	printf(">> Bye.\n");
 	exit(0);
