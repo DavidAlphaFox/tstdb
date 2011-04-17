@@ -232,17 +232,19 @@ static void *handle_func(void *p)
 					memcpy(&flag,big_buffer,4);
 					memcpy(&expire,big_buffer+4,4);
 
-					time(&now);
-					if(expire!=0 && expire<=now){//expired
-						tst_put(g_db,key,"",0);		
-						dataTable[cfd].write_buf = (char*)malloc(5);
-						memcpy(dataTable[cfd].write_buf,"END\r\n",5);
-						dataTable[cfd].write_cur = 0;
-						dataTable[cfd].need_write = 5;
-						ev.data.fd = cfd;
-						ev.events = EPOLLOUT;
-						epoll_ctl(ep_fd, EPOLL_CTL_MOD, cfd, &ev);	
-						continue;
+					if(expire!=0){// has expire flag
+						time(&now);
+						if(expire <= now){//expired
+							tst_put(g_db,key,"",0);		
+							dataTable[cfd].write_buf = (char*)malloc(5);
+							memcpy(dataTable[cfd].write_buf,"END\r\n",5);
+							dataTable[cfd].write_cur = 0;
+							dataTable[cfd].need_write = 5;
+							ev.data.fd = cfd;
+							ev.events = EPOLLOUT;
+							epoll_ctl(ep_fd, EPOLL_CTL_MOD, cfd, &ev);	
+							continue;
+						}
 					}
 					len_of_value -= 8; //8 is the length of flag and expire;
 					if(len_of_value<0){
