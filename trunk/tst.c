@@ -199,8 +199,11 @@ tst_db *tst_open(const char *full_file_name)
 		ct_read  = fscanf(hint_file_ptr,"%s %u %llu",key_buf,&tmp_len_of_value,&tmp_cur);
 		//printf("ct_read: %d\n",ct_read);
 		//printf("tmp_cur: %u\n",tmp_len_of_value);
-		if (ct_read !=3) {
+		if (ct_read <0 ) {
 			break;
+		}
+		else if(ct_read!=3){
+			continue;
 		}
 		if (tmp_len_of_value > sizeof(uint64)) {
 			put(db, key_buf, tmp_cur, 0);
@@ -217,6 +220,9 @@ tst_db *tst_open(const char *full_file_name)
 		//printf("put cur %s,%lu\n",key_buf,tmp_cur);
 	}
 	db->ready = 1;
+	if(ct_record % 20000!=0){
+		printf(">> %d records loaded\n",ct_record);
+	}
 	printf(">> db ready!\n");
 	return db;
 }
