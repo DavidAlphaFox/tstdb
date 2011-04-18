@@ -146,13 +146,17 @@ static uint32 get_node(tst_db * db, const char *key)
 tst_db *tst_open(const char *full_file_name)
 {
 	FILE *file_ptr = fopen(full_file_name, "rb");
+	FILE *hint_file_ptr;
 	tst_db *db;
-	int tmp_len_of_key, ct_read = 0, ct_record = 0;
+	int ct_read = 0, ct_record = 0;
 	int tmp_len_of_value;
 	char key_buf[256];
+	char hint_file_name[256];
 	int check_number;
 
 	uint64 tmp_cur, tmp_small_value;
+
+	sprintf(hint_file_name,"%s.hint",full_file_name);
 
 	if (file_ptr == NULL) {	//not exists;
 		file_ptr = fopen(full_file_name, "wb");
@@ -165,6 +169,9 @@ tst_db *tst_open(const char *full_file_name)
 			db = create_tst_db();
 			db->read_file_ptr = fopen(full_file_name, "rb");
 			db->write_file_ptr = fopen(full_file_name, "ab");
+			db->hint_file_ptr = fopen(hint_file_name,"a");
+			
+			hint_file_ptr = fopen(hint_file_name,"r");
 			check_number = MAGIC_NUMBER;
 			fwrite(&check_number,sizeof(int),1,db->write_file_ptr);
 			fflush(db->write_file_ptr);
@@ -173,8 +180,10 @@ tst_db *tst_open(const char *full_file_name)
 		db = create_tst_db();
 		db->read_file_ptr = fopen(full_file_name, "rb");
 		db->write_file_ptr = fopen(full_file_name, "ab");
+		db->hint_file_ptr = fopen(hint_file_name,"a");
+		hint_file_ptr = fopen(hint_file_name,"r");
 	}
-		
+	printf(">> hint file: %s\n",hint_file_name);
 	printf(">> db loading...\n");
 	fseek(db->read_file_ptr, 0, SEEK_SET);
 	fread(&check_number,sizeof(int),1,db->read_file_ptr);
@@ -183,31 +192,21 @@ tst_db *tst_open(const char *full_file_name)
 		exit(1);
 	}
 	fseek(db->read_file_ptr,4,SEEK_SET);
-
-	while (1) {
-		tmp_cur = ftell(db->read_file_ptr);
-		ct_read =
-		    fread(&tmp_len_of_key, sizeof(int), 1,
-			  db->read_file_ptr);
-		if (ct_read <= 0) {
+	if(hint_file_ptr<=0){
+		printf("warning! hint file miss.\n");
+	}
+	while (hint_file_ptr>0) {
+		ct_read  = fscanf(hint_file_ptr,"%s %u %llu",key_buf,&tmp_len_of_value,&tmp_cur);
+		//printf("ct_read: %d\n",ct_read);
+		//printf("tmp_cur: %u\n",tmp_len_of_value);
+		if (ct_read !=3) {
 			break;
 		}
-		fread(&tmp_len_of_value, sizeof(int), 1,
-		      db->read_file_ptr);
-		//printf("key len:%d\n",tmp_len_of_key);
-		//printf("value len:%d\n",tmp_len_of_value);
-		fread(key_buf, 1, tmp_len_of_key, db->read_file_ptr);
-		key_buf[tmp_len_of_key] = '\0';
 		if (tmp_len_of_value > sizeof(uint64)) {
-			fseek(db->read_file_ptr, tmp_len_of_value,
-			      SEEK_CUR);
-			//printf("tmp_cur: %d\n",tmp_cur);
 			put(db, key_buf, tmp_cur, 0);
 		} else {
 
-			tmp_small_value = 0;
-			fread(&tmp_small_value, 1, tmp_len_of_value,
-			      db->read_file_ptr);
+			tmp_small_value = tmp_cur;
 			put(db, key_buf, tmp_small_value,
 			    (char) tmp_len_of_value);
 		}
@@ -227,8 +226,10 @@ void tst_close(tst_db * db)
 {
 	db->ready = 0;
 	fflush(db->write_file_ptr);
+	fflush(db->hint_file_ptr);
 	fclose(db->write_file_ptr);
 	fclose(db->read_file_ptr);
+	fclose(db->hint_file_ptr);
 	free_tst_db(db);
 }
 
@@ -249,10 +250,12 @@ void tst_put(tst_db * db, const char *key, const char *value,
 		fwrite(value, 1, len_of_value, db->write_file_ptr);
 		if (len_of_value > sizeof(uint64)) {
 			put(db, key, old_cur, 0);
+			fprintf(db->hint_file_ptr,"%s\t%u\t%llu\n",key,len_of_value,old_cur);
 		} else {
 			tmp_value = 0;
 			memcpy(&tmp_value, value, len_of_value);
 			put(db, key, tmp_value, (char) len_of_value);
+			fprintf(db->hint_file_ptr,"%s\t%u\t%llu\n",key,len_of_value,tmp_value);
 		}
 	}
 }
