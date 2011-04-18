@@ -28,6 +28,6 @@ test.o: test.c
 bench.o: bench.c
 	$(CC) $(CFLAGS) bench.c
 clean:
-	rm -rf *o tsttest bench tstserver
+	rm -rf *.o *.db *.hint tsttest bench tstserver
 
 

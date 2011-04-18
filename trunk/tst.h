@@ -20,6 +20,7 @@ typedef struct{
 	int ready;
 	FILE* write_file_ptr;
 	FILE* read_file_ptr;
+	FILE* hint_file_ptr;
 	tst_node* data;//data[0] is not used
 }tst_db;
 
