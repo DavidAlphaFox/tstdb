@@ -17,7 +17,7 @@ test: tst.o test.o
 	$(CC) tst.o test.o -o tsttest
 
 tstserver.o: tstserver.c
-	$(CC) -c -Wall tstserver.c -o tstserver.o
+	$(CC) $(CFLAGS) tstserver.c -o tstserver.o
 
 tst.o: tst.c
 	$(CC) $(CFLAGS) -fpic tst.c

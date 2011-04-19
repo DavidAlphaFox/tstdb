@@ -178,7 +178,7 @@ static void *handle_func(void *p)
 	int i, ret, cfd, nfds;
 	struct epoll_event ev, events[MAX_EPOLL_FD];
 	char buffer[IN_BUF_SIZE];
-	int flag,expire,total,read_count,header_len;
+	int flag,expire,total,read_count,header_len,read_limit;
 	unsigned int len_of_value;
 	char key[256]={0};	
 	char rsps_msg[256] ={0};
@@ -195,6 +195,7 @@ static void *handle_func(void *p)
 				close(cfd);
 				continue;	
 			}
+			//printf("%d,%d\n",i,events[i].data.fd);
 			bzero(buffer,sizeof(buffer));
 			if (events[i].events & EPOLLIN) {
 				cfd = events[i].data.fd;
@@ -204,7 +205,12 @@ static void *handle_func(void *p)
 					//printf("ret : %d\n",ret);
 				}
 				else{
-					ret = recv(cfd, buffer, dataTable[cfd].need_read-dataTable[cfd].read_cur,0);
+					//printf("need read %d\n",dataTable[cfd].need_read);
+					//printf("read_cur %d\n",dataTable[cfd].read_cur);
+					read_limit = dataTable[cfd].need_read-dataTable[cfd].read_cur;
+					read_limit = read_limit>sizeof(buffer)?sizeof(buffer):read_limit;
+					ret = recv(cfd, buffer, read_limit,0);
+					//printf("cfd %d\n",cfd);
 					//printf("%d > %d\n",dataTable[cfd].need_read,dataTable[cfd].read_cur);
 				}
 				if(ret<=0){
