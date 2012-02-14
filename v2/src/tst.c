@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+
 static tst_db *new_tst_db(uint32 cap)
 {
 	tst_db *db = (tst_db *) malloc(sizeof(tst_db));
@@ -129,6 +130,34 @@ static uint32 search(tst_db * db,  const char *key, int len_of_s)
 	return node;
 }
 
+static uint32 search_with_path(tst_db * db,  const char *key, int len_of_s,char* path)
+{
+	int len_of_key = strlen(key);
+	uint32 node = db->root;
+	char c;
+	int d=0;
+
+	if (len_of_key <= 0)
+		return 0;
+	while(node){
+		c = key[d];
+		if( c < db->data[node].c){
+			node = db->data[node].left;
+		}else if( c > db->data[node].c ){
+			node = db->data[node].right;
+		}else if( d < len_of_key-1 ) {
+			path[d]=db->data[node].c;
+			node = db->data[node].mid;
+			d++;		
+		}else{
+			path[d]=db->data[node].c;
+			break;
+		}
+	}		
+
+	return node;
+}
+
 void tst_put(tst_db * db, const char *key, uint64 value)
 {
 	int len_of_key = strlen(key);
@@ -228,6 +257,54 @@ void tst_delete(tst_db *db,const char *key)
 		}		
 		node = myparent;		
 	}	
+}
+
+ 
+static
+void append_result( const char* key, char result[][MAX_KEY_SIZE], int * result_size)
+{
+	//printf("append: %s\n",key);
+	snprintf(result[*result_size], MAX_KEY_SIZE,"%s",key);	
+	*result_size = (*result_size) +1;
+}
+
+
+static
+void dfs(tst_db *db, uint32 node, char result[][MAX_KEY_SIZE], int* result_size,char key_buf[],int d)
+{
+	if(node==0)
+		return;
+	
+	key_buf[d]=db->data[node].c;
+
+	dfs(db, db->data[node].left, result, result_size,key_buf,d);
+	key_buf[d]=db->data[node].c;
+	dfs(db, db->data[node].mid, result, result_size,key_buf,d+1);
+	key_buf[d]=db->data[node].c;	
+	dfs(db, db->data[node].right, result,result_size,key_buf, d);	
+
+	if(db->data[node].value){
+		key_buf[d+1]='\0';
+		append_result(key_buf, result, result_size);
+	}	
+}
+
+
+void tst_prefix(tst_db *db, const char* prefix,char result[][MAX_KEY_SIZE],int* result_size)
+{
+	int len_of_prefix = strlen(prefix);
+	char base_key[MAX_KEY_SIZE]={0};
+	if (len_of_prefix <= 0)
+		return ;
+	uint32 node = search_with_path(db, prefix, len_of_prefix,base_key);
+	if(node==0)
+		return ;
+
+	*result_size=0;
+	if(db->data[node].value)	
+		append_result(base_key, result, result_size);
+
+	dfs(db, db->data[node].mid, result, result_size,base_key, strlen(base_key));		
 }
 
 

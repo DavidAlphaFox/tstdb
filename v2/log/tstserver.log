@@ -397,3 +397,75 @@
 [32149] 13 Feb 10:59:50 >> no log: 0
 [32149] 13 Feb 10:59:52 [CONN]Connection from 0.0.0.0
 [32149] 13 Feb 11:00:01 >> [32149]will shutdown...
+[867] 13 Feb 13:10:38 >> IP listening:0.0.0.0
+[867] 13 Feb 13:10:38 >> port: 8402
+[867] 13 Feb 13:10:38 >> data_file: data/tst.db
+[867] 13 Feb 13:10:38 >> reponse delay(MS): 0
+[867] 13 Feb 13:10:38 >> log file: log/tstserver.log
+[867] 13 Feb 13:10:38 >> no log: 0
+[867] 13 Feb 13:10:40 >> [867]will shutdown...
+[867] 13 Feb 13:10:40 >> [867]waiting worker thread....
+[867] 13 Feb 13:10:40 >> [867]Bye~
+[2044] 13 Feb 16:52:09 >> IP listening:0.0.0.0
+[2044] 13 Feb 16:52:09 >> port: 8402
+[2044] 13 Feb 16:52:09 >> data_file: data/tst.db
+[2044] 13 Feb 16:52:09 >> reponse delay(MS): 0
+[2044] 13 Feb 16:52:09 >> log file: log/tstserver.log
+[2044] 13 Feb 16:52:09 >> no log: 0
+[2044] 13 Feb 16:52:30 >> [2044]will shutdown...
+[2044] 13 Feb 16:52:30 >> [2044]waiting worker thread....
+[2044] 13 Feb 16:52:30 >> [2044]Bye~
+[2156] 13 Feb 17:01:21 >> IP listening:0.0.0.0
+[2156] 13 Feb 17:01:21 >> port: 8402
+[2156] 13 Feb 17:01:21 >> data_file: data/tst.db
+[2156] 13 Feb 17:01:21 >> reponse delay(MS): 0
+[2156] 13 Feb 17:01:21 >> log file: log/tstserver.log
+[2156] 13 Feb 17:01:21 >> no log: 0
+[2156] 13 Feb 17:08:17 >> [2156]will shutdown...
+[2156] 13 Feb 17:08:17 >> [2156]waiting worker thread....
+[2156] 13 Feb 17:08:17 >> [2156]Bye~
+[2412] 13 Feb 17:33:32 >> IP listening:0.0.0.0
+[2412] 13 Feb 17:33:32 >> port: 8402
+[2412] 13 Feb 17:33:32 >> data_file: data/tst.db
+[2412] 13 Feb 17:33:32 >> reponse delay(MS): 0
+[2412] 13 Feb 17:33:32 >> log file: log/tstserver.log
+[2412] 13 Feb 17:33:32 >> no log: 0
+[2412] 13 Feb 17:34:39 [CONN]Connection from 0.0.0.0
+[2412] 13 Feb 17:34:54 [BYE]: 0.0.0.0, 2
+[2412] 14 Feb 14:33:43 >> [2412]will shutdown...
+[2412] 14 Feb 14:33:43 >> [2412]waiting worker thread....
+[2412] 14 Feb 14:33:44 >> [2412]Bye~
+[20619] 14 Feb 15:51:41 >> IP listening:0.0.0.0
+[20619] 14 Feb 15:51:41 >> port: 8402
+[20619] 14 Feb 15:51:41 >> data_file: data/tst.db
+[20619] 14 Feb 15:51:41 >> reponse delay(MS): 0
+[20619] 14 Feb 15:51:41 >> log file: log/tstserver.log
+[20619] 14 Feb 15:51:41 >> no log: 0
+[20619] 14 Feb 15:51:43 [CONN]Connection from 0.0.0.0
+[20619] 14 Feb 15:51:46 >> [20619]will shutdown...
+[20619] 14 Feb 15:51:46 >> [20619]waiting worker thread....
+[20619] 14 Feb 15:51:47 >> [20619]Bye~
+[20688] 14 Feb 15:51:54 >> IP listening:0.0.0.0
+[20688] 14 Feb 15:51:54 >> port: 8402
+[20688] 14 Feb 15:51:54 >> data_file: data/tst.db
+[20688] 14 Feb 15:51:54 >> reponse delay(MS): 0
+[20688] 14 Feb 15:51:54 >> log file: log/tstserver.log
+[20688] 14 Feb 15:51:54 >> no log: 0
+[20688] 14 Feb 15:51:56 [CONN]Connection from 0.0.0.0
+[20688] 14 Feb 15:51:56 [CONN]Connection from 127.0.0.1
+[20688] 14 Feb 15:51:56 [BYE]: 0.0.0.0, 2
+[20688] 14 Feb 15:51:58 >> [20688]will shutdown...
+[20688] 14 Feb 15:51:58 >> [20688]waiting worker thread....
+[20688] 14 Feb 15:51:59 >> [20688]Bye~
+[20761] 14 Feb 15:52:01 >> IP listening:0.0.0.0
+[20761] 14 Feb 15:52:01 >> port: 8402
+[20761] 14 Feb 15:52:01 >> data_file: data/tst.db
+[20761] 14 Feb 15:52:01 >> reponse delay(MS): 0
+[20761] 14 Feb 15:52:01 >> log file: log/tstserver.log
+[20761] 14 Feb 15:52:01 >> no log: 0
+[20761] 14 Feb 15:52:03 [CONN]Connection from 0.0.0.0
+[20761] 14 Feb 15:52:12 >> [20761]will shutdown...
+[20761] 14 Feb 15:52:12 >> [20761]waiting worker thread....
+[20761] 14 Feb 15:52:13 >> [20761]Bye~
+[20761] 14 Feb 15:52:13 >> [20761]Bye~
+[20761] 14 Feb 15:52:14 >> [20761]will shutdown...

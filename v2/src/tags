@@ -4,40 +4,28 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.6	//
-BUFFERPOLL	buffer_pool.h	2;"	d
 BUF_POOL_SIZE	tstserver.c	36;"	d	file:
-BUF_UNIT_SIZE	buffer_pool.h	4;"	d
-CMD_PROCESS	cmd_process.h	2;"	d
 MAX_BODY_SIZE	tstserver.c	37;"	d	file:
 MAX_EPOLL_FD	tstserver.c	34;"	d	file:
-TSTDB	tst.h	2;"	d
-TSTSERVER	tstserver.h	2;"	d
 WORKER_COUNT	tstserver.c	35;"	d	file:
-addr	tstserver.h	/^	struct sockaddr_in addr;$/;"	m	struct:io_data_t	typeref:struct:io_data_t::sockaddr_in
 alloc_buf	buffer_pool.c	/^buffer_t* alloc_buf(bp_t* this){$/;"	f
 alloc_io_data	tstserver.c	/^alloc_io_data(int client_fd, struct sockaddr_in *client_addr, int worker_no)$/;"	f	file:
 append_recv_data	tstserver.c	/^append_recv_data(struct io_data_t *p)$/;"	f	file:
-append_send_data	tstserver.c	/^append_send_data(struct io_data_t *p, const char *data, int data_len)$/;"	f	file:
-base	buffer_pool.h	/^	buffer_t * base;$/;"	m	struct:buffer_pool
-body_len	tstserver.h	/^	int body_len;$/;"	m	struct:io_data_t
+append_result	tst.c	/^void append_result(tst_db *db,  uint32 node, char result[][MAX_KEY_SIZE], int * result_size)$/;"	f	file:
+append_send_data	tstserver.c	/^append_send_data(struct io_data_t *p, const char *data, int data_len)$/;"	f
 bp_new	buffer_pool.c	/^bp_t* bp_new(unsigned int n_items){$/;"	f
-bp_t	buffer_pool.h	/^typedef struct buffer_pool bp_t;$/;"	t	typeref:struct:buffer_pool
-buffer_pool	buffer_pool.h	/^struct buffer_pool{$/;"	s
-buffer_t	buffer_pool.h	/^struct buffer_t{$/;"	s
-buffer_t	buffer_pool.h	/^typedef struct buffer_t buffer_t;$/;"	t	typeref:struct:buffer_t
-c	tst.h	/^	char c;$/;"	m	struct:__anon1
-cap	tst.h	/^	uint32 cap;$/;"	m	struct:__anon2
+cmd_do_delete	cmd_process.c	/^void cmd_do_delete(struct io_data_t* p, const char* header )$/;"	f
+cmd_do_get	cmd_process.c	/^void cmd_do_get(struct io_data_t* p, const char* header )$/;"	f
+cmd_do_set	cmd_process.c	/^void cmd_do_set(struct io_data_t* p, const char* header, const char* body )$/;"	f
 create_tst_db	tst.c	/^tst_db *create_tst_db()$/;"	f
-data	buffer_pool.h	/^	char data[BUF_UNIT_SIZE];$/;"	m	struct:buffer_t
-data	tst.h	/^	tst_node* data;\/\/data[0] is not used$/;"	m	struct:__anon2
 destroy_fd	tstserver.c	/^destroy_fd(int myg_ep_fd, int client_fd, struct io_data_t *data_ptr, int case_no)$/;"	f	file:
 destroy_io_data	tstserver.c	/^destroy_io_data(struct io_data_t *io_data_ptr)$/;"	f	file:
+dfs	tst.c	/^void dfs(tst_db *db, uint32 node, char result[][MAX_KEY_SIZE], int* result_size)$/;"	f	file:
 do_accept	tstserver.c	/^do_accept()$/;"	f	file:
 do_bind_and_listen	tstserver.c	/^do_bind_and_listen(int port_listening, const char *ip_binding)$/;"	f	file:
+ends_with	cmd_process.c	/^static int ends_with(const char* s1, const char* s2)$/;"	f	file:
 ensure_enough_space	tst.c	/^static void ensure_enough_space(tst_db * db)$/;"	f	file:
 exit_hook	tstserver.c	/^exit_hook(int number)$/;"	f	file:
-f_head	tst.h	/^	uint32 f_head; \/\/head of reuseable node list$/;"	m	struct:__anon2
-fd	tstserver.h	/^	int fd;$/;"	m	struct:io_data_t
 fix_buf_len	tstserver.c	/^fix_buf_len(struct io_data_t *p)$/;"	f	file:
 free_buf	buffer_pool.c	/^void free_buf(bp_t* this , buffer_t* buf){$/;"	f
 free_in_buf_list	tstserver.c	/^free_in_buf_list(struct io_data_t *p)$/;"	f	file:
@@ -61,48 +49,29 @@ handle_input	tstserver.c	/^handle_input(int worker_no, struct io_data_t *client_
 handle_output	tstserver.c	/^handle_output(int worker_no, struct io_data_t *client_io_ptr)$/;"	f	file:
 has_body	tstserver.c	/^has_body(struct io_data_t *p)$/;"	f	file:
 has_header	tstserver.c	/^has_header(struct io_data_t *p)$/;"	f	file:
-head	buffer_pool.h	/^	int head;$/;"	m	struct:buffer_pool
-header_len	tstserver.h	/^	int header_len;$/;"	m	struct:io_data_t
-in_buf_head	tstserver.h	/^	buffer_t *in_buf_head,*in_buf_tail,*out_buf_head,*out_buf_tail;$/;"	m	struct:io_data_t
-in_buf_len	tstserver.h	/^	int in_buf_len,out_buf_len;	$/;"	m	struct:io_data_t
-in_buf_tail	tstserver.h	/^	buffer_t *in_buf_head,*in_buf_tail,*out_buf_head,*out_buf_tail;$/;"	m	struct:io_data_t
 init_data	tstserver.c	/^static void init_data(const char* data_file_name)$/;"	f	file:
 insert	tst.c	/^static uint32 insert(tst_db * db, uint32 node, const char *s, uint64 value,$/;"	f	file:
 insert_batch	test_tst.c	/^void insert_batch(tst_db* db, int total){$/;"	f
-io_data_t	tstserver.h	/^struct io_data_t {$/;"	s
-left	tst.h	/^	uint32 left,mid,right,parent;$/;"	m	struct:__anon1
 listen_fd	tstserver.c	/^int g_ep_fd[WORKER_COUNT], listen_fd;$/;"	v
 main	test_tst.c	/^int main(int argc ,char * argv[]){$/;"	f
 main	tstserver.c	/^main(int argc, char **argv)$/;"	f
-mid	tst.h	/^	uint32 left,mid,right,parent;$/;"	m	struct:__anon1
 new_node	tst.c	/^static uint32 new_node(tst_db * db)$/;"	f	file:
 new_tst_db	tst.c	/^static tst_db *new_tst_db(uint32 cap)$/;"	f	file:
-next	buffer_pool.h	/^	int next;$/;"	m	struct:buffer_t
-out_buf_head	tstserver.h	/^	buffer_t *in_buf_head,*in_buf_tail,*out_buf_head,*out_buf_tail;$/;"	m	struct:io_data_t
-out_buf_len	tstserver.h	/^	int in_buf_len,out_buf_len;	$/;"	m	struct:io_data_t
-out_buf_tail	tstserver.h	/^	buffer_t *in_buf_head,*in_buf_tail,*out_buf_head,*out_buf_tail;$/;"	m	struct:io_data_t
 output	test_tst.c	/^void output(tst_db* db){$/;"	f
-parent	tst.h	/^	uint32 left,mid,right,parent;$/;"	m	struct:__anon1
 parse_args	tstserver.c	/^parse_args(int argc, char *argv[], char **ip_binding, int *port_listening, char **data_file, char **log_file)$/;"	f	file:
 read_body	tstserver.c	/^read_body(struct io_data_t *p, char *body)$/;"	f	file:
 read_header	tstserver.c	/^read_header(struct io_data_t *p, char *header)$/;"	f	file:
 remove_node	tst.c	/^static uint32 remove_node(tst_db * db, uint32 node)$/;"	f	file:
-right	tst.h	/^	uint32 left,mid,right,parent;$/;"	m	struct:__anon1
-root	tst.h	/^	uint32 root;$/;"	m	struct:__anon2
-search	tst.c	/^static uint32 search(tst_db * db, uint32 node, const char *s, int d,$/;"	f	file:
+reverse_str_to	tst.c	/^void reverse_str_to(const char* s1, char * s2)$/;"	f	file:
+search	tst.c	/^static uint32 search(tst_db * db,  const char *key, int len_of_s)$/;"	f	file:
+search_with_path	tst.c	/^static uint32 search_with_path(tst_db * db,  const char *key, int len_of_s,char* path)$/;"	f	file:
 setnonblocking	tstserver.c	/^setnonblocking(int fd)$/;"	f	file:
-size	buffer_pool.h	/^	int size;$/;"	m	struct:buffer_t
-size	tst.h	/^	uint32 size;$/;"	m	struct:__anon2
-thread_data_t	tstserver.h	/^struct thread_data_t {$/;"	s
-tst_db	tst.h	/^}tst_db;$/;"	t	typeref:struct:__anon2
+starts_with	tstserver.c	/^static int starts_with(const char* s1, const char* s2)$/;"	f	file:
+testcase_1	test_tst.c	/^void testcase_1(){$/;"	f
+testcase_2	test_tst.c	/^void testcase_2()$/;"	f
 tst_delete	tst.c	/^void tst_delete(tst_db *db,const char *key)$/;"	f
 tst_get	tst.c	/^uint64 tst_get(tst_db * db, const char *key)$/;"	f
-tst_node	tst.h	/^}tst_node;$/;"	t	typeref:struct:__anon1
+tst_prefix	tst.c	/^void tst_prefix(tst_db *db, const char* prefix,char result[][MAX_KEY_SIZE],int* result_size)$/;"	f
 tst_put	tst.c	/^void tst_put(tst_db * db, const char *key, uint64 value)$/;"	f
 tstserver_log	tstserver.c	/^tstserver_log(const char *fmt, ...)$/;"	f	file:
-uint32	tst.h	/^typedef unsigned int uint32;$/;"	t
-uint64	tst.h	/^typedef unsigned long long uint64;$/;"	t
 usage	tstserver.c	/^usage()$/;"	f	file:
-value	tst.h	/^	uint64 value;	$/;"	m	struct:__anon1
-worker_no	tstserver.h	/^	int worker_no;$/;"	m	struct:io_data_t
-worker_no	tstserver.h	/^	int worker_no;$/;"	m	struct:thread_data_t

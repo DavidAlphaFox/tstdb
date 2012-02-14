@@ -21,7 +21,9 @@ void insert_batch(tst_db* db, int total){
 		tst_put(db,key,i);
 	}
 }
-int main(int argc ,char * argv[]){
+
+
+void testcase_1(){
 	tst_db * db = create_tst_db();
 	int i;
 	char key[256]={0};
@@ -85,6 +87,55 @@ int main(int argc ,char * argv[]){
 	tst_delete(db,"foonk");
 
 	printf("root: %u\n", db->root);
-		
+
+}
+
+void testcase_2()
+{
+	char result[1000][250];
+	int result_size=0;
+	int i;
+	tst_db * db = create_tst_db();
+
+	tst_put(db,"foo",1);
+	tst_put(db,"foobar",2);
+	tst_put(db,"ac",3);
+	tst_put(db,"acf",12);
+	tst_put(db,"a1243",666);
+	tst_put(db,"fork",777);
+	tst_put(db,"zzz",4);
+	tst_put(db,"foonk",5);
+	
+	printf("starts with fo\n");
+	tst_prefix(db, "fo",result, &result_size);		
+	for(i=0; i< result_size; i++){
+		printf("%s\n", result[i]);
+	}	
+
+	printf("starts with zz\n");
+	tst_prefix(db,"zz",result,&result_size);	
+	for(i=0; i< result_size; i++){
+		printf("%s\n", result[i]);
+	}	
+
+	printf("starts with foo\n");
+	tst_prefix(db,"foo",result,&result_size);	
+
+	for(i=0; i< result_size; i++){
+		printf("%s\n", result[i]);
+	}	
+
+
+	printf("starts with a\n");
+	tst_prefix(db,"a",result,&result_size);	
+
+	for(i=0; i< result_size; i++){
+		printf("%s\n", result[i]);
+	}
+}
+int main(int argc ,char * argv[]){
+	//testcase_1();	
+	testcase_2();
+
 	return 0;
 }
