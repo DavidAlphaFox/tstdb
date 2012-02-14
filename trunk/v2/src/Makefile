@@ -18,7 +18,7 @@ tstserver.o: tstserver.c tstserver.h
 	$(CC) $(CFLAGS)  -c tstserver.c -o tstserver.o
 
 tst_db.o: tst.c tst.h
-	$(CC) $(CFLAGS) -O2 -c tst.c -o tst_db.o
+	$(CC) $(CFLAGS) -c -O2 tst.c -o tst_db.o
 
 test_tst: test_tst.c tst_db.o
 	$(CC) $(CFLAGS) tst_db.o test_tst.c -o test_tst

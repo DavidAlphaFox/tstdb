@@ -368,9 +368,6 @@ main(int argc, char **argv)
 		close(g_ep_fd[i]);
 	}
 
-	fclose(g_logger);
-	fclose(g_data_file);
-	fclose(g_index_file);
 
 	tstserver_log(">> [%d]waiting worker thread....", getpid());
 
@@ -378,6 +375,11 @@ main(int argc, char **argv)
 		pthread_join(tid[i], NULL);
 
 	tstserver_log(">> [%d]Bye~", getpid());
+
+	fclose(g_logger);
+	fclose(g_data_file);
+	fclose(g_index_file);
+
 	return 0;
 }
 
