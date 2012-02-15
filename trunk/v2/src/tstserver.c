@@ -301,7 +301,8 @@ static void replay_binlog()
 {
 	char key[MAX_KEY_SIZE];
 	int n;
-	uint64 value;
+	uint64 value=0;
+	
 	while(fread(&n,sizeof(int),1,g_binlog_file)){
 		assert(n>0);
 		fread(key,sizeof(char),n,g_binlog_file);
@@ -309,7 +310,9 @@ static void replay_binlog()
 		fread(&value,sizeof(uint64),1,g_binlog_file);	
 		tst_put(g_tst,key,value);
 	}	
-
+	if(value){
+		tstserver_log("binglog replayed [OK]");
+	}
 }
 
 
@@ -320,7 +323,7 @@ static void init_data(const char* data_file_name)
 	
 	snprintf(g_db_name,MAX_FILENAME_LEN, "%s",data_file_name);		
 	snprintf(binlog_file_name,MAX_FILENAME_LEN, "%s.binlog",data_file_name);
-	g_binlog_file = fopen(binlog_file_name,"a");	
+	g_binlog_file = fopen(binlog_file_name,"a+");	
 	assert(g_binlog_file>0);
 	g_data_file_w = fopen(g_db_name,"a");
 	assert(g_data_file_w>0);
