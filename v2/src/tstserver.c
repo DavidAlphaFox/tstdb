@@ -35,6 +35,7 @@
 #define WORKER_COUNT 2
 #define BUF_POOL_SIZE 50000
 #define MAX_BODY_SIZE 1000000
+#define MAX_FILENAME_LEN 256
 
 int g_ep_fd[WORKER_COUNT], listen_fd;
 int g_delay;
@@ -42,7 +43,11 @@ int g_shutdown_flag;
 int g_nolog;
 FILE *g_logger;
 bp_t *g_bufpoll[WORKER_COUNT];
-FILE *g_data_file, *g_index_file;
+FILE *g_data_file_r[WORKER_COUNT]; //for reading
+FILE *g_data_file_w; //for writing
+FILE *g_binlog_file;
+char g_db_name[256];
+tst_db* g_tst;
 
 struct io_data_t g_io_table[WORKER_COUNT][MAX_EPOLL_FD];
 
@@ -274,14 +279,90 @@ do_accept()
 	}
 }
 
+static void reload_index()
+{
+	char index_file_name[MAX_FILENAME_LEN]={0};
+	snprintf(index_file_name,MAX_FILENAME_LEN,"%s.index",g_db_name);
+	FILE* index_file = fopen(index_file_name,"r");
+	if(index_file>0){
+		tstserver_log("reload tst index [OK]");
+		g_tst = (tst_db*)malloc(sizeof(tst_db));
+		fread(g_tst,sizeof(tst_db),1, index_file);
+		g_tst->data = (tst_node*)malloc(sizeof(tst_node) * g_tst->cap);
+		fread(g_tst->data,sizeof(tst_node), g_tst->cap, index_file);
+		fclose(index_file);						
+	}else{
+		g_tst =  create_tst_db();	
+		tstserver_log("new tst index in memory, because no index file");
+	}	
+}
+
+static void replay_binlog()
+{
+	char key[MAX_KEY_SIZE];
+	int n;
+	uint64 value;
+	while(fread(&n,sizeof(int),1,g_binlog_file)){
+		assert(n>0);
+		fread(key,sizeof(char),n,g_binlog_file);
+		key[n]='\0';	
+		fread(&value,sizeof(uint64),1,g_binlog_file);	
+		tst_put(g_tst,key,value);
+	}	
+
+}
+
+
 static void init_data(const char* data_file_name)
 {
-	char index_file_name[256];
-	snprintf(index_file_name, 256, "%s.index",data_file_name);
-	g_data_file = fopen(data_file_name,"a+");
-	g_index_file = fopen(index_file_name,"a+");
-	assert(g_data_file>0);
-	assert(g_index_file>0);
+	char binlog_file_name[MAX_FILENAME_LEN]={0};
+	int i;
+	
+	snprintf(g_db_name,MAX_FILENAME_LEN, "%s",data_file_name);		
+	snprintf(binlog_file_name,MAX_FILENAME_LEN, "%s.binlog",data_file_name);
+	g_binlog_file = fopen(binlog_file_name,"a");	
+	assert(g_binlog_file>0);
+	g_data_file_w = fopen(g_db_name,"a");
+	assert(g_data_file_w>0);
+	if(ftell(g_data_file_w)==0)
+		fwrite("[2012]",sizeof(char),6,g_data_file_w);// 0 position not used
+	for(i=0;i<WORKER_COUNT;i++){
+		g_data_file_r[i] = fopen(g_db_name,"r");
+		assert(g_data_file_r[i]>0);
+	}		
+
+	reload_index();
+	replay_binlog();
+}
+
+static void dump_tst()
+{
+	int i;
+	char index_file_name[MAX_FILENAME_LEN]={0};
+	char tmp_name[MAX_FILENAME_LEN]={0};
+	char binlog_file_name[MAX_FILENAME_LEN]={0};
+
+	snprintf(index_file_name,MAX_FILENAME_LEN,"%s.index",g_db_name);
+	snprintf(tmp_name,MAX_FILENAME_LEN,"%s.tmp",index_file_name);
+	snprintf(binlog_file_name,MAX_FILENAME_LEN,"%s.binlog",g_db_name);
+
+	fclose(g_binlog_file);
+	fclose(g_data_file_w);
+	for(i=0;i<WORKER_COUNT;i++){
+		fclose(g_data_file_r[i]);
+	}	
+
+	FILE* tmp_index = fopen(tmp_name,"w");
+	assert(tmp_index>0);
+	fwrite(g_tst,sizeof(tst_db),1,tmp_index);
+	fwrite(g_tst->data,sizeof(tst_node), g_tst->cap,tmp_index);
+	fclose(tmp_index);
+	tstserver_log("dump to temp index file [OK]");
+	rename(tmp_name, index_file_name); 	
+	tstserver_log("overwrite index file [OK]");
+	remove(binlog_file_name);
+	tstserver_log("remove binlog file[OK]");			
+	
 }
 
 int
@@ -374,11 +455,11 @@ main(int argc, char **argv)
 	for (i = 0; i < WORKER_COUNT; i++)
 		pthread_join(tid[i], NULL);
 
+	dump_tst();	
+
 	tstserver_log(">> [%d]Bye~", getpid());
 
 	fclose(g_logger);
-	fclose(g_data_file);
-	fclose(g_index_file);
 
 	return 0;
 }
@@ -643,8 +724,8 @@ handle_cmd(struct io_data_t *p, char *header, char *body)
 {
 	header[p->header_len]='\0';
 	body[p->body_len]='\0';
-	printf("header:%s\n", header);
-	printf("body:%s\n", body);
+	//printf("header:%s\n", header);
+	//printf("body:%s\n", body);
 
 	if (starts_with(header, "set")) {
 		cmd_do_set(p,header,body);	
@@ -654,6 +735,9 @@ handle_cmd(struct io_data_t *p, char *header, char *body)
 	}
 	else if(starts_with(header,"delete")){
 		cmd_do_delete(p,header);
+	}
+	else{
+		append_send_data(p,"ERROR\r\n",7);	
 	}
 }
 
