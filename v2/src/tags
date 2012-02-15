@@ -8,6 +8,7 @@ BUF_POOL_SIZE	tstserver.c	36;"	d	file:
 MAX_BODY_SIZE	tstserver.c	37;"	d	file:
 MAX_EPOLL_FD	tstserver.c	34;"	d	file:
 MAX_FILENAME_LEN	tstserver.c	38;"	d	file:
+VALUE_BUF_SIZE	cmd_process.c	14;"	d	file:
 WORKER_COUNT	tstserver.c	35;"	d	file:
 alloc_buf	buffer_pool.c	/^buffer_t* alloc_buf(bp_t* this){$/;"	f
 alloc_io_data	tstserver.c	/^alloc_io_data(int client_fd, struct sockaddr_in *client_addr, int worker_no)$/;"	f	file:
@@ -35,10 +36,10 @@ free_node	tst.c	/^static void free_node(tst_db *db, uint32 node)$/;"	f	file:
 free_out_buf_list	tstserver.c	/^free_out_buf_list(struct io_data_t *p)$/;"	f	file:
 free_tst_db	tst.c	/^void free_tst_db(tst_db * db)$/;"	f
 g_binlog_file	tstserver.c	/^FILE *g_binlog_file;$/;"	v
+g_body_buf	cmd_process.c	/^char g_body_buf[VALUE_BUF_SIZE];$/;"	v
 g_bufpoll	tstserver.c	/^bp_t *g_bufpoll[WORKER_COUNT];$/;"	v
 g_data_file_r	tstserver.c	/^FILE *g_data_file_r[WORKER_COUNT]; \/\/for reading$/;"	v
 g_data_file_w	tstserver.c	/^FILE *g_data_file_w; \/\/for writing$/;"	v
-g_db	tstserver.c	/^tst_db* g_db;$/;"	v
 g_db_name	tstserver.c	/^char g_db_name[256];$/;"	v
 g_delay	tstserver.c	/^int g_delay;$/;"	v
 g_ep_fd	tstserver.c	/^int g_ep_fd[WORKER_COUNT], listen_fd;$/;"	v
@@ -46,6 +47,8 @@ g_io_table	tstserver.c	/^struct io_data_t g_io_table[WORKER_COUNT][MAX_EPOLL_FD]
 g_logger	tstserver.c	/^FILE *g_logger;$/;"	v
 g_nolog	tstserver.c	/^int g_nolog;$/;"	v
 g_shutdown_flag	tstserver.c	/^int g_shutdown_flag;$/;"	v
+g_tst	tstserver.c	/^tst_db* g_tst;$/;"	v
+g_value_buf	cmd_process.c	/^char g_value_buf[VALUE_BUF_SIZE];$/;"	v
 get_body_len	tstserver.c	/^get_body_len(struct io_data_t *p,char* s_head_buf)$/;"	f	file:
 get_buf	buffer_pool.c	/^buffer_t* get_buf(bp_t *this,unsigned int nth){$/;"	f
 handle_cmd	tstserver.c	/^handle_cmd(struct io_data_t *p, char *header, char *body)$/;"	f	file:
@@ -66,7 +69,9 @@ output	test_tst.c	/^void output(tst_db* db){$/;"	f
 parse_args	tstserver.c	/^parse_args(int argc, char *argv[], char **ip_binding, int *port_listening, char **data_file, char **log_file)$/;"	f	file:
 read_body	tstserver.c	/^read_body(struct io_data_t *p, char *body)$/;"	f	file:
 read_header	tstserver.c	/^read_header(struct io_data_t *p, char *header)$/;"	f	file:
+reload_index	tstserver.c	/^static void reload_index()$/;"	f	file:
 remove_node	tst.c	/^static uint32 remove_node(tst_db * db, uint32 node)$/;"	f	file:
+replay_binlog	tstserver.c	/^static void replay_binlog()$/;"	f	file:
 search	tst.c	/^static uint32 search(tst_db * db,  const char *key, int len_of_s)$/;"	f	file:
 search_with_path	tst.c	/^static uint32 search_with_path(tst_db * db,  const char *key, int len_of_s,char* path)$/;"	f	file:
 setnonblocking	tstserver.c	/^setnonblocking(int fd)$/;"	f	file:
