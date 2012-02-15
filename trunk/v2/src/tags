@@ -7,11 +7,12 @@
 BUF_POOL_SIZE	tstserver.c	36;"	d	file:
 MAX_BODY_SIZE	tstserver.c	37;"	d	file:
 MAX_EPOLL_FD	tstserver.c	34;"	d	file:
+MAX_FILENAME_LEN	tstserver.c	38;"	d	file:
 WORKER_COUNT	tstserver.c	35;"	d	file:
 alloc_buf	buffer_pool.c	/^buffer_t* alloc_buf(bp_t* this){$/;"	f
 alloc_io_data	tstserver.c	/^alloc_io_data(int client_fd, struct sockaddr_in *client_addr, int worker_no)$/;"	f	file:
 append_recv_data	tstserver.c	/^append_recv_data(struct io_data_t *p)$/;"	f	file:
-append_result	tst.c	/^void append_result(tst_db *db,  uint32 node, char result[][MAX_KEY_SIZE], int * result_size)$/;"	f	file:
+append_result	tst.c	/^void append_result( const char* key, char result[][MAX_KEY_SIZE], int * result_size)$/;"	f	file:
 append_send_data	tstserver.c	/^append_send_data(struct io_data_t *p, const char *data, int data_len)$/;"	f
 bp_new	buffer_pool.c	/^bp_t* bp_new(unsigned int n_items){$/;"	f
 cmd_do_delete	cmd_process.c	/^void cmd_do_delete(struct io_data_t* p, const char* header )$/;"	f
@@ -20,9 +21,10 @@ cmd_do_set	cmd_process.c	/^void cmd_do_set(struct io_data_t* p, const char* head
 create_tst_db	tst.c	/^tst_db *create_tst_db()$/;"	f
 destroy_fd	tstserver.c	/^destroy_fd(int myg_ep_fd, int client_fd, struct io_data_t *data_ptr, int case_no)$/;"	f	file:
 destroy_io_data	tstserver.c	/^destroy_io_data(struct io_data_t *io_data_ptr)$/;"	f	file:
-dfs	tst.c	/^void dfs(tst_db *db, uint32 node, char result[][MAX_KEY_SIZE], int* result_size)$/;"	f	file:
+dfs	tst.c	/^void dfs(tst_db *db, uint32 node, char result[][MAX_KEY_SIZE], int* result_size,$/;"	f	file:
 do_accept	tstserver.c	/^do_accept()$/;"	f	file:
 do_bind_and_listen	tstserver.c	/^do_bind_and_listen(int port_listening, const char *ip_binding)$/;"	f	file:
+dump_tst	tstserver.c	/^static void dump_tst()$/;"	f	file:
 ends_with	cmd_process.c	/^static int ends_with(const char* s1, const char* s2)$/;"	f	file:
 ensure_enough_space	tst.c	/^static void ensure_enough_space(tst_db * db)$/;"	f	file:
 exit_hook	tstserver.c	/^exit_hook(int number)$/;"	f	file:
@@ -32,11 +34,14 @@ free_in_buf_list	tstserver.c	/^free_in_buf_list(struct io_data_t *p)$/;"	f	file:
 free_node	tst.c	/^static void free_node(tst_db *db, uint32 node)$/;"	f	file:
 free_out_buf_list	tstserver.c	/^free_out_buf_list(struct io_data_t *p)$/;"	f	file:
 free_tst_db	tst.c	/^void free_tst_db(tst_db * db)$/;"	f
+g_binlog_file	tstserver.c	/^FILE *g_binlog_file;$/;"	v
 g_bufpoll	tstserver.c	/^bp_t *g_bufpoll[WORKER_COUNT];$/;"	v
-g_data_file	tstserver.c	/^FILE *g_data_file, *g_index_file;$/;"	v
+g_data_file_r	tstserver.c	/^FILE *g_data_file_r[WORKER_COUNT]; \/\/for reading$/;"	v
+g_data_file_w	tstserver.c	/^FILE *g_data_file_w; \/\/for writing$/;"	v
+g_db	tstserver.c	/^tst_db* g_db;$/;"	v
+g_db_name	tstserver.c	/^char g_db_name[256];$/;"	v
 g_delay	tstserver.c	/^int g_delay;$/;"	v
 g_ep_fd	tstserver.c	/^int g_ep_fd[WORKER_COUNT], listen_fd;$/;"	v
-g_index_file	tstserver.c	/^FILE *g_data_file, *g_index_file;$/;"	v
 g_io_table	tstserver.c	/^struct io_data_t g_io_table[WORKER_COUNT][MAX_EPOLL_FD];$/;"	v	typeref:struct:io_data_t
 g_logger	tstserver.c	/^FILE *g_logger;$/;"	v
 g_nolog	tstserver.c	/^int g_nolog;$/;"	v
@@ -62,16 +67,16 @@ parse_args	tstserver.c	/^parse_args(int argc, char *argv[], char **ip_binding, i
 read_body	tstserver.c	/^read_body(struct io_data_t *p, char *body)$/;"	f	file:
 read_header	tstserver.c	/^read_header(struct io_data_t *p, char *header)$/;"	f	file:
 remove_node	tst.c	/^static uint32 remove_node(tst_db * db, uint32 node)$/;"	f	file:
-reverse_str_to	tst.c	/^void reverse_str_to(const char* s1, char * s2)$/;"	f	file:
 search	tst.c	/^static uint32 search(tst_db * db,  const char *key, int len_of_s)$/;"	f	file:
 search_with_path	tst.c	/^static uint32 search_with_path(tst_db * db,  const char *key, int len_of_s,char* path)$/;"	f	file:
 setnonblocking	tstserver.c	/^setnonblocking(int fd)$/;"	f	file:
 starts_with	tstserver.c	/^static int starts_with(const char* s1, const char* s2)$/;"	f	file:
 testcase_1	test_tst.c	/^void testcase_1(){$/;"	f
 testcase_2	test_tst.c	/^void testcase_2()$/;"	f
+testcase_3	test_tst.c	/^void testcase_3()$/;"	f
 tst_delete	tst.c	/^void tst_delete(tst_db *db,const char *key)$/;"	f
 tst_get	tst.c	/^uint64 tst_get(tst_db * db, const char *key)$/;"	f
-tst_prefix	tst.c	/^void tst_prefix(tst_db *db, const char* prefix,char result[][MAX_KEY_SIZE],int* result_size)$/;"	f
+tst_prefix	tst.c	/^void tst_prefix(tst_db *db, const char* prefix,char result[][MAX_KEY_SIZE],$/;"	f
 tst_put	tst.c	/^void tst_put(tst_db * db, const char *key, uint64 value)$/;"	f
 tstserver_log	tstserver.c	/^tstserver_log(const char *fmt, ...)$/;"	f	file:
 usage	tstserver.c	/^usage()$/;"	f	file:

@@ -10,12 +10,17 @@
 #include "buffer_pool.h"
 #include "tstserver.h"
 #include "cmd_process.h"
+#include "tst.h"
+#define VALUE_BUF_SIZE 2000000
 
-
-extern FILE *g_data_file;
-extern FILE *g_index_file;
+extern FILE *g_data_file_r[]; //for reading
+extern FILE *g_data_file_w; //for writing
+extern FILE *g_binlog_file;
+extern tst_db* g_tst;
 extern void append_send_data(struct io_data_t *p, const char *data, int data_len);
 
+char g_value_buf[VALUE_BUF_SIZE];
+char g_body_buf[VALUE_BUF_SIZE];
 
 static int ends_with(const char* s1, const char* s2)
 {
@@ -31,13 +36,59 @@ static int ends_with(const char* s1, const char* s2)
 
 void cmd_do_get(struct io_data_t* p, const char* header )
 {
-	char *msg="OK\r\n";
-	append_send_data(p,msg,strlen(msg));
+	char key[MAX_KEY_SIZE]={0};
+	char method[256]={0};
+	int tmp[3],body_len,flag,expire;
+	int total =0;
+	if(sscanf(header,"%s %s",method, key)<2)
+		return;
+	uint64 value_offset = tst_get(g_tst, key);
+	g_value_buf[0]='\0';
+	if(value_offset>0){
+			fseek(g_data_file_r[p->worker_no], value_offset, SEEK_SET);
+
+			fread(tmp,sizeof(int),3, g_data_file_r[p->worker_no]);
+			body_len = tmp[0];
+			flag =  tmp[1];
+			expire = tmp[2];
+					
+			fread(g_body_buf,sizeof(char),body_len,g_data_file_r[p->worker_no]);
+			g_body_buf[body_len]='\0';	
+			total = snprintf(g_value_buf,VALUE_BUF_SIZE,"VALUE %d %d\r\n%s\r\n",
+							flag, body_len,g_body_buf); 	
+	}
+	strcat(g_value_buf,"END\r\n");
+	append_send_data(p, g_value_buf, total+strlen("END\r\n"));
 }
 
 void cmd_do_set(struct io_data_t* p, const char* header, const char* body )
 {
 	char *msg="STORED\r\n";
+	int flag,expire,body_len;
+	int tmp[3];
+	char key[MAX_KEY_SIZE]={0};
+	char method[256]={0};
+	if(sscanf(header,"%s %s %d %d %d",method, key,&flag,&expire,&body_len)<5)
+		return;
+
+	//write data file	
+	uint64 value_offset = ftell(g_data_file_w);	
+	tmp[0]=body_len;
+	tmp[1]=flag;
+	tmp[2]=expire;
+	fwrite(tmp,sizeof(int),3,g_data_file_w);	
+	fwrite(body,sizeof(char),body_len, g_data_file_w);
+	fflush(g_data_file_w);
+
+	//write binlog file
+	int key_len = strlen(key);
+	fwrite(&key_len,sizeof(int),1,g_binlog_file);
+	fwrite(key,sizeof(char), key_len, g_binlog_file);
+	fwrite(&value_offset,sizeof(uint64),1,g_binlog_file);
+	fflush(g_binlog_file);
+	//change tst in memory
+	tst_put(g_tst,key, value_offset);
+ 				
 	if(!ends_with(header," noreply")){
 		append_send_data(p,msg,strlen(msg) );
 	}
