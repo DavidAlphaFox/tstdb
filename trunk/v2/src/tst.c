@@ -270,18 +270,21 @@ void append_result( const char* key, char result[][MAX_KEY_SIZE], int * result_s
 
 
 static
-void dfs(tst_db *db, uint32 node, char result[][MAX_KEY_SIZE], int* result_size,char key_buf[],int d)
+void dfs(tst_db *db, uint32 node, char result[][MAX_KEY_SIZE], int* result_size,
+         char key_buf[],int d,int limit)
 {
 	if(node==0)
 		return;
-	
-	key_buf[d]=db->data[node].c;
 
-	dfs(db, db->data[node].left, result, result_size,key_buf,d);
+	if(*result_size >= limit)
+		return;
+	
+	dfs(db, db->data[node].left, result, result_size,key_buf,d,limit);
 	key_buf[d]=db->data[node].c;
-	dfs(db, db->data[node].mid, result, result_size,key_buf,d+1);
+	dfs(db, db->data[node].mid, result, result_size,key_buf,d+1,limit);
 	key_buf[d]=db->data[node].c;	
-	dfs(db, db->data[node].right, result,result_size,key_buf, d);	
+	dfs(db, db->data[node].right, result,result_size,key_buf, d, limit);	
+	key_buf[d]=db->data[node].c;	
 
 	if(db->data[node].value){
 		key_buf[d+1]='\0';
@@ -290,7 +293,8 @@ void dfs(tst_db *db, uint32 node, char result[][MAX_KEY_SIZE], int* result_size,
 }
 
 
-void tst_prefix(tst_db *db, const char* prefix,char result[][MAX_KEY_SIZE],int* result_size)
+void tst_prefix(tst_db *db, const char* prefix,char result[][MAX_KEY_SIZE],
+               int* result_size,int limit)
 {
 	int len_of_prefix = strlen(prefix);
 	char base_key[MAX_KEY_SIZE]={0};
@@ -301,10 +305,11 @@ void tst_prefix(tst_db *db, const char* prefix,char result[][MAX_KEY_SIZE],int* 
 		return ;
 
 	*result_size=0;
-	if(db->data[node].value)	
+	if(db->data[node].value && *result_size < limit)	
 		append_result(base_key, result, result_size);
 
-	dfs(db, db->data[node].mid, result, result_size,base_key, strlen(base_key));		
+	if(*result_size < limit)
+		dfs(db, db->data[node].mid, result, result_size,base_key, strlen(base_key), limit);		
 }
 
 
