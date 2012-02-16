@@ -14,5 +14,8 @@ struct io_data_t {
 struct thread_data_t {
 	int worker_no;
 };
+
+#define WORKER_COUNT 2 
+
 #endif
 

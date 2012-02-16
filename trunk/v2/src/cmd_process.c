@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <pthread.h>
 
 #include "buffer_pool.h"
 #include "tstserver.h"
@@ -16,11 +17,13 @@
 extern FILE *g_data_file_r[]; //for reading
 extern FILE *g_data_file_w; //for writing
 extern FILE *g_binlog_file;
+extern pthread_rwlock_t g_biglock;
+
 extern tst_db* g_tst;
 extern void append_send_data(struct io_data_t *p, const char *data, int data_len);
 
-char g_value_buf[VALUE_BUF_SIZE];
-char g_body_buf[VALUE_BUF_SIZE];
+char g_value_buf[WORKER_COUNT][VALUE_BUF_SIZE];
+char g_body_buf[WORKER_COUNT][VALUE_BUF_SIZE];
 
 static int ends_with(const char* s1, const char* s2)
 {
@@ -42,8 +45,11 @@ void cmd_do_get(struct io_data_t* p, const char* header )
 	int total =0;
 	if(sscanf(header,"%s %s",method, key)<2)
 		return;
+
+	pthread_rwlock_rdlock(&g_biglock);
+
 	uint64 value_offset = tst_get(g_tst, key);
-	g_value_buf[0]='\0';
+	g_value_buf[p->worker_no][0]='\0';
 	if(value_offset>0){
 			fseek(g_data_file_r[p->worker_no], value_offset, SEEK_SET);
 
@@ -51,14 +57,21 @@ void cmd_do_get(struct io_data_t* p, const char* header )
 			body_len = tmp[0];
 			flag =  tmp[1];
 			expire = tmp[2];
-					
-			fread(g_body_buf,sizeof(char),body_len,g_data_file_r[p->worker_no]);
-			g_body_buf[body_len]='\0';	
-			total = snprintf(g_value_buf,VALUE_BUF_SIZE,"VALUE %d %d\r\n%s\r\n",
-							flag, body_len,g_body_buf); 	
+			if(body_len>0){	
+					fread(g_body_buf[p->worker_no],sizeof(char),body_len,g_data_file_r[p->worker_no]);
+					g_body_buf[p->worker_no][body_len]='\0';	
+					total = snprintf(g_value_buf[p->worker_no],VALUE_BUF_SIZE,"VALUE %s %d %d\r\n",
+									key, flag, body_len); 	
+					memcpy(g_value_buf[p->worker_no]+total,g_body_buf,body_len);
+					total+= body_len;
+					memcpy(g_value_buf[p->worker_no]+total,"\r\n",strlen("\r\n"));	
+					total+=strlen("\r\n");
+			}
 	}
-	strcat(g_value_buf,"END\r\n");
-	append_send_data(p, g_value_buf, total+strlen("END\r\n"));
+	memcpy(g_value_buf[p->worker_no]+total,"END\r\n",strlen("END\r\n"));
+
+	pthread_rwlock_unlock(&g_biglock);
+	append_send_data(p, g_value_buf[p->worker_no], total+strlen("END\r\n"));
 }
 
 void cmd_do_set(struct io_data_t* p, const char* header, const char* body )
@@ -71,6 +84,7 @@ void cmd_do_set(struct io_data_t* p, const char* header, const char* body )
 	if(sscanf(header,"%s %s %d %d %d",method, key,&flag,&expire,&body_len)<5)
 		return;
 
+	pthread_rwlock_wrlock(&g_biglock);
 	//write data file	
 	uint64 value_offset = ftell(g_data_file_w);	
 	tmp[0]=body_len;
@@ -88,7 +102,9 @@ void cmd_do_set(struct io_data_t* p, const char* header, const char* body )
 	fflush(g_binlog_file);
 	//change tst in memory
 	tst_put(g_tst,key, value_offset);
- 				
+ 	
+	pthread_rwlock_unlock(&g_biglock);
+	
 	if(!ends_with(header," noreply")){
 		append_send_data(p,msg,strlen(msg) );
 	}

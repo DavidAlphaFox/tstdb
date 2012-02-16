@@ -32,7 +32,6 @@
 #include "cmd_process.h"
 
 #define MAX_EPOLL_FD 40960
-#define WORKER_COUNT 2
 #define BUF_POOL_SIZE 50000
 #define MAX_BODY_SIZE 1000000
 #define MAX_FILENAME_LEN 256
@@ -48,6 +47,7 @@ FILE *g_data_file_w; //for writing
 FILE *g_binlog_file;
 char g_db_name[256];
 tst_db* g_tst;
+pthread_rwlock_t g_biglock;
 
 struct io_data_t g_io_table[WORKER_COUNT][MAX_EPOLL_FD];
 
@@ -228,7 +228,7 @@ do_bind_and_listen(int port_listening, const char *ip_binding)
 		exit(-1);
 	}
 
-	if (-1 == listen(listen_fd, 64)) {
+	if (-1 == listen(listen_fd, 64000)) {
 		perror("listen error");
 		exit(-1);
 	}
@@ -257,10 +257,10 @@ do_accept()
 		select_ret = select(listen_fd + 1, &rset, NULL, &eset, NULL);
 		if (select_ret > 0 && FD_ISSET(listen_fd, &rset)) {
 			if ((client_fd = accept(listen_fd, (struct sockaddr *)&client_addr, &client_n)) > 0) {
-				//printf("%u\n",client_addr.sin_addr.s_addr);
+				//printf("%u\n",client_fd);
 				setnonblocking(client_fd);
 				ev.data.ptr = alloc_io_data(client_fd, (struct sockaddr_in *)&client_addr, worker_pointer);
-				ev.events = EPOLLIN;
+				ev.events = EPOLLIN ;
 				epoll_ctl(g_ep_fd[worker_pointer++], EPOLL_CTL_ADD, client_fd, &ev);
 				inet_ntop(AF_INET, &client_addr.sin_addr, ip_buf, sizeof(ip_buf));
 				tstserver_log("[CONN]Connection from %s", ip_buf);
@@ -268,6 +268,7 @@ do_accept()
 					worker_pointer = 0;
 			} else {
 				perror("please check ulimit -n");
+				sleep(1);
 			}
 		} else if (errno == EBADF && g_shutdown_flag) {
 			break;
@@ -416,6 +417,8 @@ main(int argc, char **argv)
 	signal(SIGHUP, SIG_IGN);
 
 	init_data(data_file);
+
+	pthread_rwlock_init(&g_biglock, NULL);
 	
 	listen_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (-1 == listen_fd) {
@@ -463,6 +466,7 @@ main(int argc, char **argv)
 	tstserver_log(">> [%d]Bye~", getpid());
 
 	fclose(g_logger);
+	pthread_rwlock_destroy(&g_biglock);
 
 	return 0;
 }
@@ -475,7 +479,7 @@ destroy_fd(int myg_ep_fd, int client_fd, struct io_data_t *data_ptr, int case_no
 	epoll_ctl(myg_ep_fd, EPOLL_CTL_DEL, client_fd, NULL);
 	shutdown(client_fd, SHUT_RDWR);
 	close(client_fd);
-
+	//printf("delete fd %d\n",client_fd);
 	inet_ntop(AF_INET, &s_addr.sin_addr, ip_buf, sizeof(ip_buf));
 	tstserver_log("[BYE]: %s, %d", ip_buf, case_no);
 	destroy_io_data(data_ptr);
@@ -738,6 +742,9 @@ handle_cmd(struct io_data_t *p, char *header, char *body)
 	}
 	else if(starts_with(header,"delete")){
 		cmd_do_delete(p,header);
+	}
+	else if(starts_with(header,"quit")){
+		destroy_fd(g_ep_fd[p->worker_no],p->fd,p,4);	
 	}
 	else{
 		append_send_data(p,"ERROR\r\n",7);	

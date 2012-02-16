@@ -7,13 +7,13 @@ end
 
 b buffer_pool.c:35
 commands
-	p this->head	
+	#p this->head	
 	continue
 end
 
 b tst.c:165
 commands
-	
+	c	
 end
 start
 
