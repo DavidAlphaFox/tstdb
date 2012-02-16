@@ -45,7 +45,8 @@ void cmd_do_get(struct io_data_t* p, const char* header )
 	int total =0;
 	if(sscanf(header,"%s %s",method, key)<2)
 		return;
-
+	//memset(g_body_buf,0,sizeof(g_body_buf));
+	//memset(g_value_buf,0,sizeof(g_value_buf));
 	pthread_rwlock_rdlock(&g_biglock);
 
 	uint64 value_offset = tst_get(g_tst, key);
@@ -58,11 +59,11 @@ void cmd_do_get(struct io_data_t* p, const char* header )
 			flag =  tmp[1];
 			expire = tmp[2];
 			if(body_len>0){	
+					//printf("zzzzzzzzz\n");
 					fread(g_body_buf[p->worker_no],sizeof(char),body_len,g_data_file_r[p->worker_no]);
-					g_body_buf[p->worker_no][body_len]='\0';	
 					total = snprintf(g_value_buf[p->worker_no],VALUE_BUF_SIZE,"VALUE %s %d %d\r\n",
 									key, flag, body_len); 	
-					memcpy(g_value_buf[p->worker_no]+total,g_body_buf,body_len);
+					memcpy(g_value_buf[p->worker_no]+total,g_body_buf[p->worker_no],body_len);
 					total+= body_len;
 					memcpy(g_value_buf[p->worker_no]+total,"\r\n",strlen("\r\n"));	
 					total+=strlen("\r\n");

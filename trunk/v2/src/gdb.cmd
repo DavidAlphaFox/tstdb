@@ -15,5 +15,10 @@ b tst.c:165
 commands
 	c	
 end
+
+b cmd_process.c:72
+commands
+
+end 
 start
 
