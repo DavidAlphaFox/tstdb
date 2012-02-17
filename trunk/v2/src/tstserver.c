@@ -304,7 +304,7 @@ static void replay_binlog()
 	char key[MAX_KEY_SIZE];
 	int n;
 	uint64 value=0;
-	uint64 counter;	
+	uint64 counter=0;	
 	while(fread(&n,sizeof(int),1,g_binlog_file)==1){
 		if(n<=0) break;
 		fread(key,sizeof(char),n,g_binlog_file);

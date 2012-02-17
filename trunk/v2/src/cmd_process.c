@@ -48,6 +48,7 @@ void cmd_do_get(struct io_data_t* p, const char* header )
 
 	ptr += strcspn(ptr," ");
 	ptr++; //skip method
+	//printf("==============%d\n",WORKER_COUNT);
 
 	while(1){	
 			span = strcspn(ptr," \0");
@@ -110,13 +111,13 @@ void cmd_do_set(struct io_data_t* p, const char* header, const char* body )
 	fwrite(key,sizeof(char), key_len, g_binlog_file);
 	fwrite(&value_offset,sizeof(uint64),1,g_binlog_file);
 	fflush(g_binlog_file);
+	pthread_mutex_unlock(&g_writer_lock);
+
 	//change tst in memory
 	pthread_rwlock_wrlock(&g_reader_lock);
 	tst_put(g_tst,key, value_offset);
  	pthread_rwlock_unlock(&g_reader_lock);
-	
-	pthread_mutex_unlock(&g_writer_lock);
-	
+		
 	if(!ends_with(header," noreply")){
 		append_send_data(p,msg,strlen(msg) );
 	}
@@ -133,17 +134,16 @@ void cmd_do_delete(struct io_data_t* p, const char* header )
 	uint64 delete_flag=0;
 
 	pthread_mutex_lock(&g_writer_lock);
-
 	fwrite(&key_len,sizeof(int),1,g_binlog_file);
 	fwrite(key,sizeof(char), key_len, g_binlog_file);
 	fwrite(&delete_flag,sizeof(uint64),1,g_binlog_file);
 	fflush(g_binlog_file);
+	pthread_mutex_unlock(&g_writer_lock);
 
+	
 	pthread_rwlock_wrlock(&g_reader_lock);
 	tst_delete(g_tst, key);
 	pthread_rwlock_unlock(&g_reader_lock);
-
-	pthread_mutex_unlock(&g_writer_lock);
 
 	append_send_data(p,msg,strlen(msg));
 }

@@ -15,7 +15,7 @@ struct thread_data_t {
 	int worker_no;
 };
 
-#define WORKER_COUNT 2 
+#define WORKER_COUNT 4 //woker thread amount 
 
 #endif
 
