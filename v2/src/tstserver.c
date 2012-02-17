@@ -47,7 +47,8 @@ FILE *g_data_file_w; //for writing
 FILE *g_binlog_file;
 char g_db_name[256];
 tst_db* g_tst;
-pthread_rwlock_t g_biglock;
+pthread_rwlock_t g_reader_lock;
+pthread_mutex_t g_writer_lock;
 
 struct io_data_t g_io_table[WORKER_COUNT][MAX_EPOLL_FD];
 
@@ -303,17 +304,20 @@ static void replay_binlog()
 	char key[MAX_KEY_SIZE];
 	int n;
 	uint64 value=0;
-	
-	while(fread(&n,sizeof(int),1,g_binlog_file)){
-		assert(n>0);
+	uint64 counter;	
+	while(fread(&n,sizeof(int),1,g_binlog_file)==1){
+		if(n<=0) break;
 		fread(key,sizeof(char),n,g_binlog_file);
 		key[n]='\0';	
 		fread(&value,sizeof(uint64),1,g_binlog_file);	
-		tst_put(g_tst,key,value);
+		if(value>0)
+			tst_put(g_tst,key,value);
+		else
+			tst_delete(g_tst,key);
+		counter++;
 	}	
-	if(value){
-		tstserver_log("binglog replayed [OK]");
-	}
+
+	tstserver_log("binglog replayed,pair count: %d [OK]",counter);
 }
 
 
@@ -418,7 +422,8 @@ main(int argc, char **argv)
 
 	init_data(data_file);
 
-	pthread_rwlock_init(&g_biglock, NULL);
+	pthread_rwlock_init(&g_reader_lock, NULL);
+	pthread_mutex_init(&g_writer_lock, NULL);
 	
 	listen_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (-1 == listen_fd) {
@@ -466,7 +471,8 @@ main(int argc, char **argv)
 	tstserver_log(">> [%d]Bye~", getpid());
 
 	fclose(g_logger);
-	pthread_rwlock_destroy(&g_biglock);
+	pthread_rwlock_destroy(&g_reader_lock);
+	pthread_mutex_destroy(&g_writer_lock);
 
 	return 0;
 }
