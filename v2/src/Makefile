@@ -11,7 +11,7 @@ tstserver: tstserver.o buffer_pool.o tst_db.o cmd_process.o
 buffer_pool.o: buffer_pool.c buffer_pool.h
 	$(CC) $(CFLAGS) -c buffer_pool.c -o buffer_pool.o
 
-cmd_process.o: cmd_process.c cmd_process.h
+cmd_process.o: cmd_process.c cmd_process.h tstserver.h
 	$(CC) $(CFLAGS) -c cmd_process.c -o cmd_process.o
 
 tstserver.o: tstserver.c tstserver.h
