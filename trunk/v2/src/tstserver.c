@@ -594,6 +594,7 @@ get_body_len(struct io_data_t *p,char* s_head_buf)
 	bp_t *mybp;
 	char key[1024] = { 0 };
 	int flag, expire, value_len;
+	uint64 sign;
 
 	mybp = g_bufpoll[p->worker_no];
 	if (p->body_len >= 0)
@@ -616,7 +617,11 @@ get_body_len(struct io_data_t *p,char* s_head_buf)
 		if (sscanf(header_msg, "set %s %d %d %d", key, &flag, &expire, &value_len) == 4) {
 			if(value_len<0 || value_len>=MAX_BODY_SIZE) value_len=0;
 			body_len = value_len;
-		}
+		} 
+		else if (sscanf(header_msg, "cas %s %d %d %d %llu", key, &flag, &expire, &value_len,&sign) == 5) {
+			if(value_len<0 || value_len>=MAX_BODY_SIZE) value_len=0;
+			body_len = value_len;
+		} 
 		p->body_len = body_len;
 	}
 }
@@ -743,11 +748,23 @@ handle_cmd(struct io_data_t *p, char *header, char *body)
 	if (starts_with(header, "set")) {
 		cmd_do_set(p,header,body);	
 	}
+	else if(starts_with(header,"gets")){
+		cmd_do_get(p,header,1);
+	}
 	else if(starts_with(header,"get") ){
-		cmd_do_get(p,header);
+		cmd_do_get(p,header,0);
+	}
+	else if(starts_with(header,"cas")){
+		cmd_do_cas(p,header,body);
 	}
 	else if(starts_with(header,"delete")){
 		cmd_do_delete(p,header);
+	}
+	else if(starts_with(header,"incr")){
+		cmd_do_incr(p,header);
+	}
+	else if(starts_with(header,"decr")){
+		cmd_do_decr(p,header);
 	}
 	else if(starts_with(header,"quit")){
 		destroy_fd(g_ep_fd[p->worker_no],p->fd,p,4);	
