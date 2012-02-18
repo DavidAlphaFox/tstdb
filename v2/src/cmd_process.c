@@ -217,12 +217,73 @@ void cmd_do_delete(struct io_data_t* p, const char* header )
 	append_send_data(p,msg,strlen(msg));
 }
 
+static void incr_or_decr(struct io_data_t*p ,const char* header,int is_decr)
+{
+	char *msg_fail="NOT_FOUND\r\n";
+	char *msg;
+	char key[MAX_KEY_SIZE]={0};
+	char method[256]={0};
+	char str_number[256]={0};
+	int number=0,delta=0;
+	uint64 value_offset=0;
+	int body_len,flag,expire,tmp[3],key_len;
+
+	if(sscanf(header,"%s %s %d",method, key, &delta)!= 3)
+		return;
+
+	pthread_mutex_lock(&g_writer_lock);
+	do{
+			if((value_offset=tst_get(g_tst,key))==0){
+				msg = msg_fail;
+				break;
+			}
+			fseek(g_data_file_r[p->worker_no], value_offset, SEEK_SET);
+			fread(tmp,sizeof(int),3, g_data_file_r[p->worker_no]);
+			body_len = tmp[0];
+			flag =  tmp[1];
+			expire = tmp[2];
+			fread(str_number,sizeof(char),body_len,g_data_file_r[p->worker_no]);	
+			number = atoi(str_number);
+			if(is_decr)
+				number -= delta;
+			else
+				number += delta;
+			
+			snprintf(str_number,256,"%d", number);
+			//write data file	
+			uint64 value_offset = ftell(g_data_file_w);	
+			tmp[0]=strlen(str_number);
+			tmp[1]=flag;
+			tmp[2]=expire;
+			fwrite(tmp,sizeof(int),3,g_data_file_w);	
+			fwrite(str_number,sizeof(char),tmp[0], g_data_file_w);
+			fflush(g_data_file_w);
+
+			//write binlog file
+			key_len = strlen(key);
+			fwrite(&key_len,sizeof(int),1,g_binlog_file);
+			fwrite(key,sizeof(char), key_len, g_binlog_file);
+			fwrite(&value_offset,sizeof(uint64),1,g_binlog_file);
+			fflush(g_binlog_file);
+			
+			//change tst in memory
+			pthread_rwlock_wrlock(&g_reader_lock);
+			tst_put(g_tst,key, value_offset);
+			pthread_rwlock_unlock(&g_reader_lock);
+				
+			strcat(str_number,"\r\n");
+			msg = str_number;
+	}while(0);
+
+	pthread_mutex_unlock(&g_writer_lock);
+	append_send_data(p,msg,strlen(msg));
+}
+
 void cmd_do_incr(struct io_data_t* p, const char* header)
 {
-
+	incr_or_decr(p,header,0);	
 }
 void cmd_do_decr(struct io_data_t* p, const char* header)
 {
-
-
+	incr_or_decr(p,header,1);
 }
