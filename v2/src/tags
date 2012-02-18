@@ -4,20 +4,20 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.6	//
-BUF_POOL_SIZE	tstserver.c	36;"	d	file:
-MAX_BODY_SIZE	tstserver.c	37;"	d	file:
+BUF_POOL_SIZE	tstserver.c	35;"	d	file:
+MAX_BODY_SIZE	tstserver.c	36;"	d	file:
 MAX_EPOLL_FD	tstserver.c	34;"	d	file:
-MAX_FILENAME_LEN	tstserver.c	38;"	d	file:
-VALUE_BUF_SIZE	cmd_process.c	14;"	d	file:
-WORKER_COUNT	tstserver.c	35;"	d	file:
+MAX_FILENAME_LEN	tstserver.c	37;"	d	file:
+VALUE_BUF_SIZE	cmd_process.c	15;"	d	file:
 alloc_buf	buffer_pool.c	/^buffer_t* alloc_buf(bp_t* this){$/;"	f
 alloc_io_data	tstserver.c	/^alloc_io_data(int client_fd, struct sockaddr_in *client_addr, int worker_no)$/;"	f	file:
 append_recv_data	tstserver.c	/^append_recv_data(struct io_data_t *p)$/;"	f	file:
 append_result	tst.c	/^void append_result( const char* key, char result[][MAX_KEY_SIZE], int * result_size)$/;"	f	file:
 append_send_data	tstserver.c	/^append_send_data(struct io_data_t *p, const char *data, int data_len)$/;"	f
 bp_new	buffer_pool.c	/^bp_t* bp_new(unsigned int n_items){$/;"	f
+cmd_do_cas	cmd_process.c	/^void cmd_do_cas(struct io_data_t *p , const char* header,const char* body)$/;"	f
 cmd_do_delete	cmd_process.c	/^void cmd_do_delete(struct io_data_t* p, const char* header )$/;"	f
-cmd_do_get	cmd_process.c	/^void cmd_do_get(struct io_data_t* p, const char* header )$/;"	f
+cmd_do_get	cmd_process.c	/^void cmd_do_get(struct io_data_t* p, const char* header,int r_sign )$/;"	f
 cmd_do_set	cmd_process.c	/^void cmd_do_set(struct io_data_t* p, const char* header, const char* body )$/;"	f
 create_tst_db	tst.c	/^tst_db *create_tst_db()$/;"	f
 destroy_fd	tstserver.c	/^destroy_fd(int myg_ep_fd, int client_fd, struct io_data_t *data_ptr, int case_no)$/;"	f	file:
@@ -36,7 +36,6 @@ free_node	tst.c	/^static void free_node(tst_db *db, uint32 node)$/;"	f	file:
 free_out_buf_list	tstserver.c	/^free_out_buf_list(struct io_data_t *p)$/;"	f	file:
 free_tst_db	tst.c	/^void free_tst_db(tst_db * db)$/;"	f
 g_binlog_file	tstserver.c	/^FILE *g_binlog_file;$/;"	v
-g_body_buf	cmd_process.c	/^char g_body_buf[VALUE_BUF_SIZE];$/;"	v
 g_bufpoll	tstserver.c	/^bp_t *g_bufpoll[WORKER_COUNT];$/;"	v
 g_data_file_r	tstserver.c	/^FILE *g_data_file_r[WORKER_COUNT]; \/\/for reading$/;"	v
 g_data_file_w	tstserver.c	/^FILE *g_data_file_w; \/\/for writing$/;"	v
@@ -46,9 +45,11 @@ g_ep_fd	tstserver.c	/^int g_ep_fd[WORKER_COUNT], listen_fd;$/;"	v
 g_io_table	tstserver.c	/^struct io_data_t g_io_table[WORKER_COUNT][MAX_EPOLL_FD];$/;"	v	typeref:struct:io_data_t
 g_logger	tstserver.c	/^FILE *g_logger;$/;"	v
 g_nolog	tstserver.c	/^int g_nolog;$/;"	v
+g_reader_lock	tstserver.c	/^pthread_rwlock_t g_reader_lock;$/;"	v
 g_shutdown_flag	tstserver.c	/^int g_shutdown_flag;$/;"	v
 g_tst	tstserver.c	/^tst_db* g_tst;$/;"	v
-g_value_buf	cmd_process.c	/^char g_value_buf[VALUE_BUF_SIZE];$/;"	v
+g_value_buf	cmd_process.c	/^char g_value_buf[WORKER_COUNT][VALUE_BUF_SIZE];$/;"	v
+g_writer_lock	tstserver.c	/^pthread_mutex_t g_writer_lock;$/;"	v
 get_body_len	tstserver.c	/^get_body_len(struct io_data_t *p,char* s_head_buf)$/;"	f	file:
 get_buf	buffer_pool.c	/^buffer_t* get_buf(bp_t *this,unsigned int nth){$/;"	f
 handle_cmd	tstserver.c	/^handle_cmd(struct io_data_t *p, char *header, char *body)$/;"	f	file:

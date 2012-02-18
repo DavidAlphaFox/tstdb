@@ -37,7 +37,7 @@ static int ends_with(const char* s1, const char* s2)
 		return 0;			
 }
 
-void cmd_do_get(struct io_data_t* p, const char* header )
+void cmd_do_get(struct io_data_t* p, const char* header,int r_sign )
 {
 	char key[MAX_KEY_SIZE]={0};
 	int tmp[3],body_len,flag,expire;
@@ -68,8 +68,14 @@ void cmd_do_get(struct io_data_t* p, const char* header )
 					flag =  tmp[1];
 					expire = tmp[2];
 					if(body_len>0){	
-							total += snprintf(g_value_buf[p->worker_no]+total,VALUE_BUF_SIZE,"VALUE %s %d %d\r\n",
-											key, flag, body_len); 	
+							if(r_sign==0){
+									total += snprintf(g_value_buf[p->worker_no]+total,VALUE_BUF_SIZE,"VALUE %s %d %d\r\n",
+													key, flag, body_len); 	
+							}else{
+									total += snprintf(g_value_buf[p->worker_no]+total,VALUE_BUF_SIZE,"VALUE %s %d %d %llu\r\n",
+													key, flag, body_len, value_offset); 	
+
+							}
 							fread(g_value_buf[p->worker_no]+total,sizeof(char),body_len,g_data_file_r[p->worker_no]);
 
 							total+= body_len;
@@ -83,6 +89,60 @@ void cmd_do_get(struct io_data_t* p, const char* header )
 	}
 	memcpy(g_value_buf[p->worker_no]+total,"END\r\n",strlen("END\r\n"));
 	append_send_data(p, g_value_buf[p->worker_no], total+strlen("END\r\n"));
+}
+
+//compare and swap
+//use 'gets key1' to fetch the sign of key
+void cmd_do_cas(struct io_data_t *p , const char* header,const char* body)
+{
+	char *msg_ok="STORED\r\n";
+	char *msg_fail="EXISTS\r\n";
+	int flag,expire,body_len;
+	int tmp[3];
+	char key[MAX_KEY_SIZE]={0};
+	char method[256]={0};
+	char * msg;	
+	uint64 sign,value_offset;
+	if(sscanf(header,"%s %s %d %d %d %llu",method, key,&flag,&expire,&body_len,&sign)<6)
+		return;
+
+	pthread_mutex_lock(&g_writer_lock);
+	do{
+			value_offset = tst_get(g_tst,key);
+			if(value_offset!=sign){
+				msg = msg_fail;
+				break;			
+			}
+			//write data file	
+			value_offset = ftell(g_data_file_w);	
+			tmp[0]=body_len;
+			tmp[1]=flag;
+			tmp[2]=expire;
+			fwrite(tmp,sizeof(int),3,g_data_file_w);	
+			fwrite(body,sizeof(char),body_len, g_data_file_w);
+			fflush(g_data_file_w);
+
+			//write binlog file
+			int key_len = strlen(key);
+			fwrite(&key_len,sizeof(int),1,g_binlog_file);
+			fwrite(key,sizeof(char), key_len, g_binlog_file);
+			fwrite(&value_offset,sizeof(uint64),1,g_binlog_file);
+			fflush(g_binlog_file);
+			
+			//change tst in memory
+			pthread_rwlock_wrlock(&g_reader_lock);
+			tst_put(g_tst,key, value_offset);
+			pthread_rwlock_unlock(&g_reader_lock);
+
+			msg = msg_ok;
+	}while(0);	
+
+	pthread_mutex_unlock(&g_writer_lock);
+
+	if(!ends_with(header," noreply")){
+		append_send_data(p,msg,strlen(msg) );
+	}
+
 }
 
 void cmd_do_set(struct io_data_t* p, const char* header, const char* body )
@@ -111,13 +171,14 @@ void cmd_do_set(struct io_data_t* p, const char* header, const char* body )
 	fwrite(key,sizeof(char), key_len, g_binlog_file);
 	fwrite(&value_offset,sizeof(uint64),1,g_binlog_file);
 	fflush(g_binlog_file);
-	pthread_mutex_unlock(&g_writer_lock);
-
+	
 	//change tst in memory
 	pthread_rwlock_wrlock(&g_reader_lock);
 	tst_put(g_tst,key, value_offset);
  	pthread_rwlock_unlock(&g_reader_lock);
 		
+	pthread_mutex_unlock(&g_writer_lock);
+
 	if(!ends_with(header," noreply")){
 		append_send_data(p,msg,strlen(msg) );
 	}
@@ -125,7 +186,9 @@ void cmd_do_set(struct io_data_t* p, const char* header, const char* body )
 
 void cmd_do_delete(struct io_data_t* p, const char* header )
 {
-	char *msg="DELETED\r\n";
+	char *msg_ok="DELETED\r\n";
+	char *msg_fail="NOT_FOUND\r\n";
+	char *msg;
 	char key[MAX_KEY_SIZE]={0};
 	char method[256]={0};
 	if(sscanf(header,"%s %s",method, key)!=2)
@@ -134,18 +197,32 @@ void cmd_do_delete(struct io_data_t* p, const char* header )
 	uint64 delete_flag=0;
 
 	pthread_mutex_lock(&g_writer_lock);
-	fwrite(&key_len,sizeof(int),1,g_binlog_file);
-	fwrite(key,sizeof(char), key_len, g_binlog_file);
-	fwrite(&delete_flag,sizeof(uint64),1,g_binlog_file);
-	fflush(g_binlog_file);
+	do{
+			if(tst_get(g_tst,key)==0){
+				msg = msg_fail;
+				break;
+			}
+			fwrite(&key_len,sizeof(int),1,g_binlog_file);
+			fwrite(key,sizeof(char), key_len, g_binlog_file);
+			fwrite(&delete_flag,sizeof(uint64),1,g_binlog_file);
+			fflush(g_binlog_file);
+				
+			pthread_rwlock_wrlock(&g_reader_lock);
+			tst_delete(g_tst, key);
+			pthread_rwlock_unlock(&g_reader_lock);
+			msg = msg_ok;
+	}while(0);
+
 	pthread_mutex_unlock(&g_writer_lock);
-
-	
-	pthread_rwlock_wrlock(&g_reader_lock);
-	tst_delete(g_tst, key);
-	pthread_rwlock_unlock(&g_reader_lock);
-
 	append_send_data(p,msg,strlen(msg));
 }
 
+void cmd_do_incr(struct io_data_t* p, const char* header)
+{
 
+}
+void cmd_do_decr(struct io_data_t* p, const char* header)
+{
+
+
+}
