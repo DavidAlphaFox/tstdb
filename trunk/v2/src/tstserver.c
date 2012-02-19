@@ -33,7 +33,8 @@
 
 #define MAX_EPOLL_FD 40960
 #define BUF_POOL_SIZE 50000
-#define MAX_BODY_SIZE 1000000
+#define MAX_BODY_SIZE 2000000
+#define VALUE_LIMIT 1000000
 #define MAX_FILENAME_LEN 256
 
 int g_ep_fd[WORKER_COUNT], listen_fd;
@@ -615,11 +616,13 @@ get_body_len(struct io_data_t *p,char* s_head_buf)
 	if (start >= p->header_len) {
 		header_msg[p->header_len] = '\0';
 		if (sscanf(header_msg, "set %s %d %d %d", key, &flag, &expire, &value_len) == 4) {
-			if(value_len<0 || value_len>=MAX_BODY_SIZE) value_len=0;
+			if(value_len<0) value_len=0;
+			else if(value_len>VALUE_LIMIT) value_len= VALUE_LIMIT;
 			body_len = value_len;
 		} 
 		else if (sscanf(header_msg, "cas %s %d %d %d %llu", key, &flag, &expire, &value_len,&sign) == 5) {
-			if(value_len<0 || value_len>=MAX_BODY_SIZE) value_len=0;
+			if(value_len<0) value_len=0;
+			else if(value_len>VALUE_LIMIT) value_len= VALUE_LIMIT;
 			body_len = value_len;
 		} 
 		p->body_len = body_len;
@@ -742,7 +745,7 @@ handle_cmd(struct io_data_t *p, char *header, char *body)
 {
 	header[p->header_len]='\0';
 	body[p->body_len]='\0';
-	//printf("header:%s\n", header);
+	//tstserver_log("header:%s", header);
 	//printf("body:%s\n", body);
 
 	if (starts_with(header, "set")) {
