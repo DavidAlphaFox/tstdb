@@ -8,13 +8,13 @@ svn co http://tstdb.googlecode.com/svn/trunk/v2/ tstdb
 
 == compile ==
 
-cd src
-make
+*cd src
+*make
 
 = Start =
-./tst.sh start
+*./tst.sh start
+*tail -f log/`*` 
 
-tail -f log/`*` 
 (check the log)
 
 == Stop =
