@@ -2,11 +2,11 @@ How to use tstdb v2.
 
 = Build =
 
-1) check out source
+== check out source ==
 
-http://tstdb.googlecode.com/svn/trunk/v2/
+svn co http://tstdb.googlecode.com/svn/trunk/v2/ tstdb
 
-2) compile
+== compile ==
 
 cd src
 make
@@ -14,7 +14,7 @@ make
 = Start =
 ./tst.sh start
 
-tail -f log/* 
+tail -f log/`*` 
 (check the log)
 
 == Stop =
