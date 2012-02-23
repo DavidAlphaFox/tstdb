@@ -1,4 +1,9 @@
 How to use tstdb v2.
+= Feature =
+# memcached protocol compatible
+# no third-party library dependencies 
+# pipeline requests support
+# high performance & data persistence capability
 
 = Build =
 
@@ -8,12 +13,12 @@ svn co http://tstdb.googlecode.com/svn/trunk/v2/ tstdb
 
 == compile ==
 
-*cd src
-*make
+* cd src
+* make
 
 = Start =
-*./tst.sh start
-*tail -f log/`*` 
+* ./tst.sh start
+* tail -f log/`*` 
 
 (check the log)
 
