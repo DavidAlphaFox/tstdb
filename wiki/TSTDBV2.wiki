@@ -1,6 +1,6 @@
 How to use tstdb v2.
 = Feature =
- # memcached protocol compatible
+ # memcached protocol compatible (get/set/delete/incr/decr/cas/gets)
  # no third-party library dependencies 
  # pipeline requests support
  # high performance & data persistence capability
