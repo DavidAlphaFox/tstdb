@@ -1,4 +1,4 @@
-#How to use tstdb v2.
+How to use tstdb v2.
 
 = Build =
 
@@ -25,4 +25,3 @@ tail -f log/*
 vim conf/tstserver.conf
 
 when conf file changed, run './tst.sh stop' and then './tst.sh start'
-
