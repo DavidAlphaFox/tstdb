@@ -32,7 +32,7 @@
 #include "cmd_process.h"
 
 #define MAX_EPOLL_FD 40960
-#define BUF_POOL_SIZE 50000
+#define BUF_POOL_SIZE 20000
 #define MAX_BODY_SIZE 2000000
 #define VALUE_LIMIT 1000000
 #define MAX_FILENAME_LEN 256
@@ -230,7 +230,7 @@ do_bind_and_listen(int port_listening, const char *ip_binding)
 		exit(-1);
 	}
 
-	if (-1 == listen(listen_fd, 64000)) {
+	if (-1 == listen(listen_fd, 64)) {
 		perror("listen error");
 		exit(-1);
 	}
@@ -746,7 +746,7 @@ handle_cmd(struct io_data_t *p, char *header, char *body)
 	header[p->header_len]='\0';
 	body[p->body_len]='\0';
 	//tstserver_log("header:%s", header);
-	//printf("body:%s\n", body);
+	//tstserver_log("body:%s\n", body);
 
 	if (starts_with(header, "set")) {
 		cmd_do_set(p,header,body);	
