@@ -18,15 +18,11 @@ How to use tstdb v2.
 
 = Start =
  * ./tst.sh start
- * tail -f log/`*` 
-
-(check the log)
+ * tail -f log/`*`   (check the log)
 
 == Stop =
-./tst.sh stop
+ * ./tst.sh stop
 
 = Configuration =
-
-vim conf/tstserver.conf
-
-when conf file changed, run './tst.sh stop' and then './tst.sh start'
+ * vim conf/tstserver.conf
+ * when conf file changed, run './tst.sh stop' and then './tst.sh start'
