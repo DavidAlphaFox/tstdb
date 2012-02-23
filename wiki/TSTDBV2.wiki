@@ -11,7 +11,7 @@ How to use tstdb v2.
 
  * svn co http://tstdb.googlecode.com/svn/trunk/v2/ tstdb
 
-== compile ==
+== compile ==b
 
  * cd src
  * make
@@ -19,6 +19,7 @@ How to use tstdb v2.
 = Start =
  * ./tst.sh start
  * tail -f log/`*`   (check the log)
+ * default listening port: 8402 (can be changed in conf/tstserver.conf)
 
 == Stop =
  * ./tst.sh stop
