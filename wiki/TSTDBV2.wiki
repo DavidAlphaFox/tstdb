@@ -3,7 +3,7 @@ How to use tstdb v2.
  # memcached protocol compatible (get/set/delete/incr/decr/cas/gets)
  # no third-party library dependencies 
  # pipeline requests support
- # high performance & data persistence capability
+ # high performance & data persistence ability
 
 = Build =
 
