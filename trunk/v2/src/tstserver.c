@@ -112,6 +112,7 @@ alloc_io_data(int client_fd, struct sockaddr_in *client_addr, int worker_no)
 	io_data_ptr->out_buf_tail = NULL;
 	io_data_ptr->header_len = 0;
 	io_data_ptr->body_len = -1;
+	io_data_ptr->is_write_cmd = 0;
 	return io_data_ptr;
 }
 
@@ -619,12 +620,17 @@ get_body_len(struct io_data_t *p,char* s_head_buf)
 			if(value_len<0) value_len=0;
 			else if(value_len>VALUE_LIMIT) value_len= VALUE_LIMIT;
 			body_len = value_len;
+			p->is_write_cmd =1;
 		} 
 		else if (sscanf(header_msg, "cas %s %d %d %d %llu", key, &flag, &expire, &value_len,&sign) == 5) {
 			if(value_len<0) value_len=0;
 			else if(value_len>VALUE_LIMIT) value_len= VALUE_LIMIT;
 			body_len = value_len;
+			p->is_write_cmd =1;
 		} 
+		else{
+			p->is_write_cmd = 0;
+		}
 		p->body_len = body_len;
 	}
 }
@@ -781,7 +787,7 @@ handle_cmd(struct io_data_t *p, char *header, char *body)
 static void
 fix_buf_len(struct io_data_t *p)
 {
-	if (p->body_len > 0) {
+	if (p->is_write_cmd == 1) {
 		p->in_buf_len -= (p->header_len + p->body_len + 4);
 	} else {
 		p->in_buf_len -= (p->header_len + p->body_len + 2);
@@ -808,9 +814,9 @@ handle_input(int worker_no, struct io_data_t *client_io_ptr, char *s_body_buf,ch
 	while (has_header(client_io_ptr)) {
 		get_body_len(client_io_ptr,header);
 
-		if (client_io_ptr->body_len == 0 || has_body(client_io_ptr)) {
+		if (client_io_ptr->is_write_cmd == 0 || has_body(client_io_ptr)) {
 			read_header(client_io_ptr, header);
-			if (client_io_ptr->body_len > 0)
+			if (client_io_ptr->is_write_cmd == 1)
 				read_body(client_io_ptr, body);
 			handle_cmd(client_io_ptr, header, body);
 			fix_buf_len(client_io_ptr);
