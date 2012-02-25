@@ -105,7 +105,8 @@ void cmd_do_cas(struct io_data_t *p , const char* header,const char* body)
 	uint64 sign,value_offset;
 	if(sscanf(header,"%s %s %d %d %d %llu",method, key,&flag,&expire,&body_len,&sign)<6)
 		return;
-
+	if(body_len<0)
+		return;
 	pthread_mutex_lock(&g_writer_lock);
 	do{
 			value_offset = tst_get(g_tst,key);
@@ -154,7 +155,7 @@ void cmd_do_set(struct io_data_t* p, const char* header, const char* body )
 	char method[256]={0};
 	if(sscanf(header,"%s %s %d %d %d",method, key,&flag,&expire,&body_len)<5)
 		return;
-	if(body_len<=0)
+	if(body_len<0)
 		return;
 	pthread_mutex_lock(&g_writer_lock);
 	//write data file	

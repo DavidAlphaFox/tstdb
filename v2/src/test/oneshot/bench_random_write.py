@@ -19,7 +19,7 @@ for i in xrange(count+1):
             mc = memcache.Client(['localhost:8402'], debug=0) #re connect
             print 'reconn'
         if i%10000==0:
-            print 'inserting',i
+            print 'inserting',key,i
 
 end = time.time()
 
