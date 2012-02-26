@@ -307,18 +307,30 @@ static void replay_binlog()
 	int n;
 	uint64 value=0;
 	uint64 counter=0;	
-	while(fread(&n,sizeof(int),1,g_binlog_file)==1){
-		if(n<=0) break;
-		fread(key,sizeof(char),n,g_binlog_file);
+	int last_success_pos =0;
+	while(feof(g_binlog_file) == 0){
+		if(fread(&n,sizeof(int),1,g_binlog_file)!=1){
+			break;
+		}
+		if(n<=0){
+			 break;
+		}
+		if(fread(key,sizeof(char),n,g_binlog_file)!=n){
+			break;
+		}
 		key[n]='\0';	
-		fread(&value,sizeof(uint64),1,g_binlog_file);	
+		if(fread(&value,sizeof(uint64),1,g_binlog_file)!=1){
+			break;
+		}	
 		if(value>0)
 			tst_put(g_tst,key,value);
 		else
 			tst_delete(g_tst,key);
 		counter++;
+		last_success_pos = ftell(g_binlog_file);
 	}	
 
+	ftruncate(fileno(g_binlog_file),last_success_pos);
 	tstserver_log("binglog replayed,pair count: %d [OK]",counter);
 }
 
