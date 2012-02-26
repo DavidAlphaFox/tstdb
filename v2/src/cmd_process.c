@@ -67,7 +67,7 @@ void cmd_do_get(struct io_data_t* p, const char* header,int r_sign )
 					body_len = tmp[0];
 					flag =  tmp[1];
 					expire = tmp[2];
-					if(body_len>0){	
+					if(body_len>=0){	
 							if(r_sign==0){
 									total += snprintf(g_value_buf[p->worker_no]+total,VALUE_BUF_SIZE,"VALUE %s %d %d\r\n",
 													key, flag, body_len); 	
