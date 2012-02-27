@@ -30,6 +30,6 @@ Introduction to tstdb v2.
  * when conf file changed, run './tst.sh stop' and then './tst.sh start'
 
 = Client =
- * tstdb python client:
- * any memcached client library can be used as a tstdb client(except 'prefix' operation)
+ * tstdb python client:[http://code.google.com/p/tstdb/source/browse/trunk/v2/src/client/pytst.py]
+ * any other memcached client library can be used as a tstdb client(except 'prefix' operation)
  * some example: [http://code.google.com/p/tstdb/source/browse/#svn%2Ftrunk%2Fv2%2Fsrc%2Ftest%2Foneshot%253Fstate%253Dclosed python client]
