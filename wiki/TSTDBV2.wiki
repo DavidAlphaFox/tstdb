@@ -1,9 +1,10 @@
-How to use tstdb v2.
+Introduction to tstdb v2.
 = Feature =
  # memcached protocol compatible (get/set/delete/incr/decr/cas/gets)
  # no third-party library dependencies 
  # pipeline requests support
  # high performance & data persistence ability
+ # prefix searching
 
 = Build =
 
@@ -29,5 +30,6 @@ How to use tstdb v2.
  * when conf file changed, run './tst.sh stop' and then './tst.sh start'
 
 = Client =
- * any memcached client library can be used as a tstdb client
+ * tstdb python client:
+ * any memcached client library can be used as a tstdb client(except 'prefix' operation)
  * some example: [http://code.google.com/p/tstdb/source/browse/#svn%2Ftrunk%2Fv2%2Fsrc%2Ftest%2Foneshot%253Fstate%253Dclosed python client]
