@@ -50,6 +50,7 @@ void cmd_do_prefix(struct io_data_t* p, const char* header)
 	int result_bytes_len=0;
 	char rsps_header[HEADER_BUF_SIZE]={0};	
 	char *result = g_prefix_buf[p->worker_no];
+	result[0]='\0';
 
 	if(sscanf(header,"prefix %s %d",prefix,&limit)==2){
 		if(limit> MAX_PREFIX_RESULT)
