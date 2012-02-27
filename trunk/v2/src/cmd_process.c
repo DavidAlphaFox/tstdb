@@ -12,7 +12,11 @@
 #include "tstserver.h"
 #include "cmd_process.h"
 #include "tst.h"
+
+#define HEADER_BUF_SIZE 512 
 #define VALUE_BUF_SIZE 2000000
+#define MAX_PREFIX_RESULT 10000
+#define PREFIX_BUF_SIZE 2560000
 
 extern FILE *g_data_file_r[]; //for reading
 extern FILE *g_data_file_w; //for writing
@@ -24,6 +28,7 @@ extern tst_db* g_tst;
 extern void append_send_data(struct io_data_t *p, const char *data, int data_len);
 
 char g_value_buf[WORKER_COUNT][VALUE_BUF_SIZE];
+char g_prefix_buf[WORKER_COUNT][PREFIX_BUF_SIZE];
 
 static int ends_with(const char* s1, const char* s2)
 {
@@ -35,6 +40,32 @@ static int ends_with(const char* s1, const char* s2)
 		return 1;
 	else
 		return 0;			
+}
+
+void cmd_do_prefix(struct io_data_t* p, const char* header) 
+{
+	char prefix[MAX_KEY_SIZE]={0};
+	int limit;
+	int result_size=0;
+	int result_bytes_len=0;
+	char rsps_header[HEADER_BUF_SIZE]={0};	
+	char *result = g_prefix_buf[p->worker_no];
+
+	if(sscanf(header,"prefix %s %d",prefix,&limit)==2){
+		if(limit> MAX_PREFIX_RESULT)
+			limit = MAX_PREFIX_RESULT;
+
+		pthread_rwlock_rdlock(& g_reader_lock);
+		tst_prefix(g_tst, prefix, result, &result_size, limit);	
+		pthread_rwlock_unlock(& g_reader_lock);				
+		
+		result_bytes_len = strlen(result);
+		snprintf(rsps_header,HEADER_BUF_SIZE,"KEYS %d %d\r\n", result_size, result_bytes_len);	
+		append_send_data(p,rsps_header,strlen(rsps_header));
+		append_send_data(p,result,result_bytes_len);	
+	}		
+
+	append_send_data(p,"END\r\n",strlen("END\r\n"));
 }
 
 void cmd_do_get(struct io_data_t* p, const char* header,int r_sign )
@@ -100,7 +131,7 @@ void cmd_do_cas(struct io_data_t *p , const char* header,const char* body)
 	int flag,expire,body_len;
 	int tmp[3];
 	char key[MAX_KEY_SIZE]={0};
-	char method[256]={0};
+	char method[HEADER_BUF_SIZE]={0};
 	char * msg;	
 	uint64 sign,value_offset;
 	if(sscanf(header,"%s %s %d %d %d %llu",method, key,&flag,&expire,&body_len,&sign)<6)
@@ -152,7 +183,7 @@ void cmd_do_set(struct io_data_t* p, const char* header, const char* body )
 	int flag,expire,body_len;
 	int tmp[3];
 	char key[MAX_KEY_SIZE]={0};
-	char method[256]={0};
+	char method[HEADER_BUF_SIZE]={0};
 	if(sscanf(header,"%s %s %d %d %d",method, key,&flag,&expire,&body_len)<5)
 		return;
 	if(body_len<0)
@@ -192,7 +223,7 @@ void cmd_do_delete(struct io_data_t* p, const char* header )
 	char *msg_fail="NOT_FOUND\r\n";
 	char *msg;
 	char key[MAX_KEY_SIZE]={0};
-	char method[256]={0};
+	char method[HEADER_BUF_SIZE]={0};
 	if(sscanf(header,"%s %s",method, key)!=2)
 		return;
 	int key_len = strlen(key);
@@ -224,8 +255,8 @@ static void incr_or_decr(struct io_data_t*p ,const char* header,int is_decr)
 	char *msg_fail="NOT_FOUND\r\n";
 	char *msg;
 	char key[MAX_KEY_SIZE]={0};
-	char method[256]={0};
-	char str_number[256]={0};
+	char method[HEADER_BUF_SIZE]={0};
+	char str_number[HEADER_BUF_SIZE]={0};
 	int number=0,delta=0;
 	uint64 value_offset=0;
 	int body_len,flag,expire,tmp[3],key_len;
@@ -251,7 +282,7 @@ static void incr_or_decr(struct io_data_t*p ,const char* header,int is_decr)
 			else
 				number += delta;
 			
-			snprintf(str_number,256,"%d", number);
+			snprintf(str_number,HEADER_BUF_SIZE,"%d", number);
 			//write data file	
 			uint64 value_offset = ftell(g_data_file_w);	
 			tmp[0]=strlen(str_number);
