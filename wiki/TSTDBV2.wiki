@@ -4,7 +4,7 @@ Introduction to tstdb v2.
  # no third-party library dependencies 
  # pipeline requests support
  # high performance & data persistence ability
- # ['prefix searching' http://code.google.com/p/tstdb/wiki/PrefixCommand]
+ # [http://code.google.com/p/tstdb/wiki/PrefixCommand prefix searching]
 
 = Build =
 
