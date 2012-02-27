@@ -4,85 +4,79 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.6	//
-BUF_POOL_SIZE	tstserver.c	35;"	d	file:
-MAX_BODY_SIZE	tstserver.c	36;"	d	file:
-MAX_EPOLL_FD	tstserver.c	34;"	d	file:
-MAX_FILENAME_LEN	tstserver.c	37;"	d	file:
-VALUE_BUF_SIZE	cmd_process.c	15;"	d	file:
-alloc_buf	buffer_pool.c	/^buffer_t* alloc_buf(bp_t* this){$/;"	f
-alloc_io_data	tstserver.c	/^alloc_io_data(int client_fd, struct sockaddr_in *client_addr, int worker_no)$/;"	f	file:
-append_recv_data	tstserver.c	/^append_recv_data(struct io_data_t *p)$/;"	f	file:
-append_result	tst.c	/^void append_result( const char* key, char result[][MAX_KEY_SIZE], int * result_size)$/;"	f	file:
-append_send_data	tstserver.c	/^append_send_data(struct io_data_t *p, const char *data, int data_len)$/;"	f
-bp_new	buffer_pool.c	/^bp_t* bp_new(unsigned int n_items){$/;"	f
-cmd_do_cas	cmd_process.c	/^void cmd_do_cas(struct io_data_t *p , const char* header,const char* body)$/;"	f
-cmd_do_delete	cmd_process.c	/^void cmd_do_delete(struct io_data_t* p, const char* header )$/;"	f
-cmd_do_get	cmd_process.c	/^void cmd_do_get(struct io_data_t* p, const char* header,int r_sign )$/;"	f
-cmd_do_set	cmd_process.c	/^void cmd_do_set(struct io_data_t* p, const char* header, const char* body )$/;"	f
-create_tst_db	tst.c	/^tst_db *create_tst_db()$/;"	f
-destroy_fd	tstserver.c	/^destroy_fd(int myg_ep_fd, int client_fd, struct io_data_t *data_ptr, int case_no)$/;"	f	file:
-destroy_io_data	tstserver.c	/^destroy_io_data(struct io_data_t *io_data_ptr)$/;"	f	file:
-dfs	tst.c	/^void dfs(tst_db *db, uint32 node, char result[][MAX_KEY_SIZE], int* result_size,$/;"	f	file:
-do_accept	tstserver.c	/^do_accept()$/;"	f	file:
-do_bind_and_listen	tstserver.c	/^do_bind_and_listen(int port_listening, const char *ip_binding)$/;"	f	file:
-dump_tst	tstserver.c	/^static void dump_tst()$/;"	f	file:
-ends_with	cmd_process.c	/^static int ends_with(const char* s1, const char* s2)$/;"	f	file:
-ensure_enough_space	tst.c	/^static void ensure_enough_space(tst_db * db)$/;"	f	file:
-exit_hook	tstserver.c	/^exit_hook(int number)$/;"	f	file:
-fix_buf_len	tstserver.c	/^fix_buf_len(struct io_data_t *p)$/;"	f	file:
-free_buf	buffer_pool.c	/^void free_buf(bp_t* this , buffer_t* buf){$/;"	f
-free_in_buf_list	tstserver.c	/^free_in_buf_list(struct io_data_t *p)$/;"	f	file:
-free_node	tst.c	/^static void free_node(tst_db *db, uint32 node)$/;"	f	file:
-free_out_buf_list	tstserver.c	/^free_out_buf_list(struct io_data_t *p)$/;"	f	file:
-free_tst_db	tst.c	/^void free_tst_db(tst_db * db)$/;"	f
-g_binlog_file	tstserver.c	/^FILE *g_binlog_file;$/;"	v
-g_bufpoll	tstserver.c	/^bp_t *g_bufpoll[WORKER_COUNT];$/;"	v
-g_data_file_r	tstserver.c	/^FILE *g_data_file_r[WORKER_COUNT]; \/\/for reading$/;"	v
-g_data_file_w	tstserver.c	/^FILE *g_data_file_w; \/\/for writing$/;"	v
-g_db_name	tstserver.c	/^char g_db_name[256];$/;"	v
-g_delay	tstserver.c	/^int g_delay;$/;"	v
-g_ep_fd	tstserver.c	/^int g_ep_fd[WORKER_COUNT], listen_fd;$/;"	v
-g_io_table	tstserver.c	/^struct io_data_t g_io_table[WORKER_COUNT][MAX_EPOLL_FD];$/;"	v	typeref:struct:io_data_t
-g_logger	tstserver.c	/^FILE *g_logger;$/;"	v
-g_nolog	tstserver.c	/^int g_nolog;$/;"	v
-g_reader_lock	tstserver.c	/^pthread_rwlock_t g_reader_lock;$/;"	v
-g_shutdown_flag	tstserver.c	/^int g_shutdown_flag;$/;"	v
-g_tst	tstserver.c	/^tst_db* g_tst;$/;"	v
-g_value_buf	cmd_process.c	/^char g_value_buf[WORKER_COUNT][VALUE_BUF_SIZE];$/;"	v
-g_writer_lock	tstserver.c	/^pthread_mutex_t g_writer_lock;$/;"	v
-get_body_len	tstserver.c	/^get_body_len(struct io_data_t *p,char* s_head_buf)$/;"	f	file:
-get_buf	buffer_pool.c	/^buffer_t* get_buf(bp_t *this,unsigned int nth){$/;"	f
-handle_cmd	tstserver.c	/^handle_cmd(struct io_data_t *p, char *header, char *body)$/;"	f	file:
-handle_core	tstserver.c	/^handle_core(void *param)$/;"	f	file:
-handle_input	tstserver.c	/^handle_input(int worker_no, struct io_data_t *client_io_ptr, char *s_body_buf,char* s_head_buf)$/;"	f	file:
-handle_output	tstserver.c	/^handle_output(int worker_no, struct io_data_t *client_io_ptr)$/;"	f	file:
-has_body	tstserver.c	/^has_body(struct io_data_t *p)$/;"	f	file:
-has_header	tstserver.c	/^has_header(struct io_data_t *p)$/;"	f	file:
-init_data	tstserver.c	/^static void init_data(const char* data_file_name)$/;"	f	file:
-insert	tst.c	/^static uint32 insert(tst_db * db, uint32 node, const char *s, uint64 value,$/;"	f	file:
-insert_batch	test_tst.c	/^void insert_batch(tst_db* db, int total){$/;"	f
-listen_fd	tstserver.c	/^int g_ep_fd[WORKER_COUNT], listen_fd;$/;"	v
-main	test_tst.c	/^int main(int argc ,char * argv[]){$/;"	f
-main	tstserver.c	/^main(int argc, char **argv)$/;"	f
-new_node	tst.c	/^static uint32 new_node(tst_db * db)$/;"	f	file:
-new_tst_db	tst.c	/^static tst_db *new_tst_db(uint32 cap)$/;"	f	file:
-output	test_tst.c	/^void output(tst_db* db){$/;"	f
-parse_args	tstserver.c	/^parse_args(int argc, char *argv[], char **ip_binding, int *port_listening, char **data_file, char **log_file)$/;"	f	file:
-read_body	tstserver.c	/^read_body(struct io_data_t *p, char *body)$/;"	f	file:
-read_header	tstserver.c	/^read_header(struct io_data_t *p, char *header)$/;"	f	file:
-reload_index	tstserver.c	/^static void reload_index()$/;"	f	file:
-remove_node	tst.c	/^static uint32 remove_node(tst_db * db, uint32 node)$/;"	f	file:
-replay_binlog	tstserver.c	/^static void replay_binlog()$/;"	f	file:
-search	tst.c	/^static uint32 search(tst_db * db,  const char *key, int len_of_s)$/;"	f	file:
-search_with_path	tst.c	/^static uint32 search_with_path(tst_db * db,  const char *key, int len_of_s,char* path)$/;"	f	file:
-setnonblocking	tstserver.c	/^setnonblocking(int fd)$/;"	f	file:
-starts_with	tstserver.c	/^static int starts_with(const char* s1, const char* s2)$/;"	f	file:
-testcase_1	test_tst.c	/^void testcase_1(){$/;"	f
-testcase_2	test_tst.c	/^void testcase_2()$/;"	f
-testcase_3	test_tst.c	/^void testcase_3()$/;"	f
-tst_delete	tst.c	/^void tst_delete(tst_db *db,const char *key)$/;"	f
-tst_get	tst.c	/^uint64 tst_get(tst_db * db, const char *key)$/;"	f
-tst_prefix	tst.c	/^void tst_prefix(tst_db *db, const char* prefix,char result[][MAX_KEY_SIZE],$/;"	f
-tst_put	tst.c	/^void tst_put(tst_db * db, const char *key, uint64 value)$/;"	f
-tstserver_log	tstserver.c	/^tstserver_log(const char *fmt, ...)$/;"	f	file:
-usage	tstserver.c	/^usage()$/;"	f	file:
+FooStruct	pytst.py	/^        class FooStruct(object):$/;"	c
+MemcachedKeyCharacterError	pytst.py	/^    class MemcachedKeyCharacterError(MemcachedKeyError):$/;"	c
+MemcachedKeyError	pytst.py	/^    class MemcachedKeyError(Exception):$/;"	c
+MemcachedKeyLengthError	pytst.py	/^    class MemcachedKeyLengthError(MemcachedKeyError):$/;"	c
+MemcachedKeyNoneError	pytst.py	/^    class MemcachedKeyNoneError(MemcachedKeyError):$/;"	c
+MemcachedKeyTypeError	pytst.py	/^    class MemcachedKeyTypeError(MemcachedKeyError):$/;"	c
+MemcachedStringEncodingError	pytst.py	/^    class MemcachedStringEncodingError(Exception):$/;"	c
+_Client	pytst.py	/^class _Client(local):$/;"	c
+_ConnectionDeadError	pytst.py	/^class _ConnectionDeadError(Exception):$/;"	c
+_Error	pytst.py	/^class _Error(Exception):$/;"	c
+_Host	pytst.py	/^class _Host(object):$/;"	c
+__eq__	pytst.py	/^            def __eq__(self, other):$/;"	m	class:FooStruct	file:
+__init__	pytst.py	/^            def __init__(self):$/;"	m	class:FooStruct
+__init__	pytst.py	/^    def __init__(self, host, debug=0, dead_retry=_DEAD_RETRY,$/;"	m	class:_Host
+__init__	pytst.py	/^    def __init__(self, servers, debug=0, pickleProtocol=0,$/;"	f
+__str__	pytst.py	/^            def __str__(self):$/;"	m	class:FooStruct	file:
+__str__	pytst.py	/^    def __str__(self):$/;"	m	class:_Host	file:
+_check_dead	pytst.py	/^    def _check_dead(self):$/;"	m	class:_Host
+_doctest	pytst.py	/^def _doctest():$/;"	f
+_expect_cas_value	pytst.py	/^    def _expect_cas_value(self, server, line=None):$/;"	f
+_expectkeys	pytst.py	/^    def _expectkeys(self, server, line=None):$/;"	f
+_expectvalue	pytst.py	/^    def _expectvalue(self, server, line=None):$/;"	f
+_get	pytst.py	/^    def _get(self, cmd, key):$/;"	f
+_get_server	pytst.py	/^    def _get_server(self, key):$/;"	f
+_get_socket	pytst.py	/^    def _get_socket(self):$/;"	m	class:_Host
+_incrdecr	pytst.py	/^    def _incrdecr(self, cmd, key, delta):$/;"	f
+_init_buckets	pytst.py	/^    def _init_buckets(self):$/;"	f
+_map_and_prefix_keys	pytst.py	/^    def _map_and_prefix_keys(self, key_iterable, key_prefix):$/;"	f
+_prefix	pytst.py	/^    def _prefix(self, cmd, prefix,limit):$/;"	f
+_recv_value	pytst.py	/^    def _recv_value(self, server, flags, rlen):$/;"	f
+_set	pytst.py	/^    def _set(self, cmd, key, val, time, min_compress_len = 0):$/;"	f
+_statlog	pytst.py	/^    def _statlog(self, func):$/;"	f
+_unsafe_get	pytst.py	/^        def _unsafe_get():$/;"	f
+_unsafe_prefix	pytst.py	/^        def _unsafe_prefix():$/;"	f
+_unsafe_set	pytst.py	/^        def _unsafe_set():$/;"	f
+_val_to_store_info	pytst.py	/^    def _val_to_store_info(self, val, min_compress_len):$/;"	f
+add	pytst.py	/^    def add(self, key, val, time = 0, min_compress_len = 0):$/;"	f
+append	pytst.py	/^    def append(self, key, val, time=0, min_compress_len=0):$/;"	f
+cas	pytst.py	/^    def cas(self, key, val, time=0, min_compress_len=0):$/;"	f
+check_key	pytst.py	/^    def check_key(self, key, key_extra_len=0):$/;"	f
+close_socket	pytst.py	/^    def close_socket(self):$/;"	m	class:_Host
+cmemcache_hash	pytst.py	/^def cmemcache_hash(key):$/;"	f
+connect	pytst.py	/^    def connect(self):$/;"	m	class:_Host
+connect	pytst.py	/^def connect(self,host='localhost',port=8402):$/;"	f
+debuglog	pytst.py	/^    def debuglog(self, str):$/;"	f
+debuglog	pytst.py	/^    def debuglog(self, str):$/;"	m	class:_Host
+decompress	pytst.py	/^    def decompress(val):$/;"	f
+decr	pytst.py	/^    def decr(self, key, delta=1):$/;"	f
+delete	pytst.py	/^    def delete(self, key, time=0):$/;"	f
+delete_multi	pytst.py	/^    def delete_multi(self, keys, time=0, key_prefix=''):$/;"	f
+disconnect_all	pytst.py	/^    def disconnect_all(self):$/;"	f
+expect	pytst.py	/^    def expect(self, text):$/;"	m	class:_Host
+flush_all	pytst.py	/^    def flush_all(self):$/;"	f
+forget_dead_hosts	pytst.py	/^    def forget_dead_hosts(self):$/;"	f
+get	pytst.py	/^    def get(self, key):$/;"	f
+get_multi	pytst.py	/^    def get_multi(self, keys, key_prefix=''):$/;"	f
+get_slabs	pytst.py	/^    def get_slabs(self):$/;"	f
+get_stats	pytst.py	/^    def get_stats(self, stat_args = None):$/;"	f
+gets	pytst.py	/^    def gets(self, key):$/;"	f
+incr	pytst.py	/^    def incr(self, key, delta=1):$/;"	f
+local	pytst.py	/^    class local(object):$/;"	c
+mark_dead	pytst.py	/^    def mark_dead(self, reason):$/;"	m	class:_Host
+prefix	pytst.py	/^    def prefix(self,prefix,limit=10000):$/;"	f
+prepend	pytst.py	/^    def prepend(self, key, val, time=0, min_compress_len=0):$/;"	f
+readline	pytst.py	/^    def readline(self):$/;"	m	class:_Host
+recv	pytst.py	/^    def recv(self, rlen):$/;"	m	class:_Host
+replace	pytst.py	/^    def replace(self, key, val, time=0, min_compress_len=0):$/;"	f
+reset_cas	pytst.py	/^    def reset_cas(self):$/;"	f
+send_cmd	pytst.py	/^    def send_cmd(self, cmd):$/;"	m	class:_Host
+send_cmds	pytst.py	/^    def send_cmds(self, cmds):$/;"	m	class:_Host
+set	pytst.py	/^    def set(self, key, val, time=0, min_compress_len=0):$/;"	f
+set_multi	pytst.py	/^    def set_multi(self, mapping, time=0, key_prefix='', min_compress_len=0):$/;"	f
+set_servers	pytst.py	/^    def set_servers(self, servers):$/;"	f
+test_setget	pytst.py	/^        def test_setget(key, val):$/;"	f
+to_s	pytst.py	/^        def to_s(val):$/;"	f
+useOldServerHashFunction	pytst.py	/^def useOldServerHashFunction():$/;"	f
