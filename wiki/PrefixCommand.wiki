@@ -1,8 +1,7 @@
 
-
 = Introduction =
 
-"prefix" is a new command, which does not exists in memcached 
+"prefix" is a new command, which does not exist in memcached 
 
 
 = Details =
