@@ -261,16 +261,17 @@ void tst_delete(tst_db *db,const char *key)
 
  
 static
-void append_result( const char* key, char result[][MAX_KEY_SIZE], int * result_size)
+void append_result( const char* key, char* result, int * result_size)
 {
 	//printf("append: %s\n",key);
-	snprintf(result[*result_size], MAX_KEY_SIZE,"%s",key);	
+	strcat(result, key);	
+	strcat(result, "\r\n");
 	*result_size = (*result_size) +1;
 }
 
 
 static
-void dfs(tst_db *db, uint32 node, char result[][MAX_KEY_SIZE], int* result_size,
+void dfs(tst_db *db, uint32 node, char* result, int* result_size,
          char key_buf[],int d,int limit)
 {
 	if(node==0)
@@ -293,7 +294,7 @@ void dfs(tst_db *db, uint32 node, char result[][MAX_KEY_SIZE], int* result_size,
 }
 
 
-void tst_prefix(tst_db *db, const char* prefix,char result[][MAX_KEY_SIZE],
+void tst_prefix(tst_db *db, const char* prefix,char* result,
                int* result_size,int limit)
 {
 	int len_of_prefix = strlen(prefix);
@@ -303,7 +304,7 @@ void tst_prefix(tst_db *db, const char* prefix,char result[][MAX_KEY_SIZE],
 	uint32 node = search_with_path(db, prefix, len_of_prefix,base_key);
 	if(node==0)
 		return ;
-
+	result[0]='\0';
 	*result_size=0;
 	if(db->data[node].value && *result_size < limit)	
 		append_result(base_key, result, result_size);

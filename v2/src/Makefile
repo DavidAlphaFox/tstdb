@@ -1,6 +1,6 @@
 .PHONY: clean,all
 CC=gcc
-CFLAGS=-g -Wall -Werror 
+CFLAGS=-g -Wall 
 
 all: tstserver test_tst
 	cp tstserver ../bin/

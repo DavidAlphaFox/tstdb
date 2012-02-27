@@ -92,9 +92,8 @@ void testcase_1(){
 
 void testcase_2()
 {
-	char result[1000][250];
+	char result[250000];
 	int result_size=0;
-	int i;
 	tst_db * db = create_tst_db();
 
 	tst_put(db,"foo",1);
@@ -108,44 +107,31 @@ void testcase_2()
 	
 	printf("starts with fo\n");
 	tst_prefix(db, "fo",result, &result_size,10);		
-	for(i=0; i< result_size; i++){
-		printf("%s\n", result[i]);
-	}	
+	printf("%s\n", result);
 
 	printf("starts with zz\n");
 	tst_prefix(db,"zz",result,&result_size,10);	
-	for(i=0; i< result_size; i++){
-		printf("%s\n", result[i]);
-	}	
+	printf("%s\n", result);
 
 	printf("starts with foo\n");
 	tst_prefix(db,"foo",result,&result_size,10);	
-
-	for(i=0; i< result_size; i++){
-		printf("%s\n", result[i]);
-	}	
+	printf("%s\n", result);
 
 
 	printf("starts with a\n");
 	tst_prefix(db,"a",result,&result_size,10);	
-
-	for(i=0; i< result_size; i++){
-		printf("%s\n", result[i]);
-	}
+	printf("%s\n", result);
 }
 void testcase_3()
 {
 	tst_db * db = create_tst_db();
-	char result[1000][250];
-	int i,result_size;
+	char result[250000];
+	int result_size;
 
 	insert_batch(db,100000);	
 	printf("starts with 12\n");
 	tst_prefix(db,"12",result,&result_size,10);	
-
-	for(i=0; i< result_size; i++){
-		printf("%s\n", result[i]);
-	}
+	printf("%s\n", result);
 
 }
 int main(int argc ,char * argv[]){
