@@ -17,12 +17,12 @@ Introduction to tstdb v2.
  * cd src
  * make
 
-= Start =
+= Start Service=
  * ./tst.sh start
  * tail -f log/`*`   (check the log)
  * default listening port: 8402 (can be changed in conf/tstserver.conf)
 
-= Stop =
+= Stop Service=
  * ./tst.sh stop
 
 = Configuration =
