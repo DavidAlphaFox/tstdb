@@ -820,9 +820,11 @@ class Client(local):
                 r_size, bytes_len = self._expectkeys(server)
 
                 if r_size==0:
+                    server.expect("END")
                     return [] 
                 try:
                     value = server.recv(bytes_len)
+                    #print value
                 finally:
                     server.expect("END")
             except (_Error, socket.error), msg:

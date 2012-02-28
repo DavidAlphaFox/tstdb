@@ -282,15 +282,19 @@ void dfs(tst_db *db, uint32 node, char* result, int* result_size,
 	
 	dfs(db, db->data[node].left, result, result_size,key_buf,d,limit);
 	key_buf[d]=db->data[node].c;
-	dfs(db, db->data[node].mid, result, result_size,key_buf,d+1,limit);
-	key_buf[d]=db->data[node].c;	
-	dfs(db, db->data[node].right, result,result_size,key_buf, d, limit);	
-	key_buf[d]=db->data[node].c;	
 
 	if(db->data[node].value){
 		key_buf[d+1]='\0';
 		append_result(key_buf, result, result_size);
 	}	
+
+	dfs(db, db->data[node].mid, result, result_size,key_buf,d+1,limit);
+	key_buf[d]=db->data[node].c;	
+
+	dfs(db, db->data[node].right, result,result_size,key_buf, d, limit);	
+	key_buf[d]=db->data[node].c;	
+
+	
 }
 
 
