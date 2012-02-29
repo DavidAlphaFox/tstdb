@@ -806,7 +806,7 @@ class Client(local):
                 server.mark_dead(msg)
             return 0
 
-    def _prefix(self, cmd, prefix,limit):
+    def _prefix(self, cmd, prefix,limit,sorting_order):
         self.check_key(prefix)
         server, key = self._get_server(prefix)
         if not server:
@@ -816,7 +816,7 @@ class Client(local):
             self._statlog(cmd)
             value = ''
             try:
-                server.send_cmd("%s %s %d" % (cmd, key, limit))
+                server.send_cmd("%s %s %d %s" % (cmd, key, limit,sorting_order))
                 r_size, bytes_len = self._expectkeys(server)
 
                 if r_size==0:
@@ -892,12 +892,12 @@ class Client(local):
                 server.mark_dead(msg)
             return None
 
-    def prefix(self,prefix,limit=10000):
+    def prefix(self,prefix,limit=10000,sorting_order='asc'):
         '''Retrieves lots of keys which has prefix as  @prefix,
            at most @limit keys will return
         @return: a list of keys
         '''
-        return self._prefix('prefix',prefix,limit)
+        return self._prefix('prefix',prefix,limit,sorting_order)
 
     def get(self, key):
         '''Retrieves a key from the memcache.

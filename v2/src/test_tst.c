@@ -22,6 +22,10 @@ void insert_batch(tst_db* db, int total){
 	}
 }
 
+void my_tst_prefix(tst_db* db,const char* key,char * result,int* result_size,int limit)
+{
+	tst_prefix(db,key,result,result_size,limit,ASC);
+}	
 
 void testcase_1(){
 	tst_db * db = create_tst_db();
@@ -106,20 +110,20 @@ void testcase_2()
 	tst_put(db,"foonk",5);
 	
 	printf("starts with fo\n");
-	tst_prefix(db, "fo",result, &result_size,10);		
+	my_tst_prefix(db, "fo",result, &result_size,10);		
 	printf("%s\n", result);
 
 	printf("starts with zz\n");
-	tst_prefix(db,"zz",result,&result_size,10);	
+	my_tst_prefix(db,"zz",result,&result_size,10);	
 	printf("%s\n", result);
 
 	printf("starts with foo\n");
-	tst_prefix(db,"foo",result,&result_size,10);	
+	my_tst_prefix(db,"foo",result,&result_size,10);	
 	printf("%s\n", result);
 
 
 	printf("starts with a\n");
-	tst_prefix(db,"a",result,&result_size,10);	
+	my_tst_prefix(db,"a",result,&result_size,10);	
 	printf("%s\n", result);
 }
 void testcase_3()
@@ -129,15 +133,49 @@ void testcase_3()
 	int result_size;
 
 	insert_batch(db,100000);	
-	printf("starts with 12\n");
-	tst_prefix(db,"12",result,&result_size,10);	
+	printf("starts with 126\n");
+	my_tst_prefix(db,"126",result,&result_size,20);	
 	printf("%s\n", result);
 
 }
+
+void testcase_4()
+{
+	tst_db * db = create_tst_db();
+	char result[250000];
+	int result_size;
+
+	insert_batch(db,100000);	
+	//tst_put(db,"ab",1);
+	//tst_put(db,"za",2);
+	//tst_put(db,"z",3);
+	printf("less than 126\n");
+	tst_less(db,"126",result,&result_size,30);	
+	printf("%s\n", result);
+
+}
+void testcase_5()
+{
+	tst_db * db = create_tst_db();
+	char result[250000];
+	int result_size;
+
+	insert_batch(db,100000);	
+	//tst_put(db,"ab",1);
+	//tst_put(db,"za",2);
+	//tst_put(db,"z",3);
+	printf("greater than 126\n");
+	tst_greater(db,"126",result,&result_size,30);	
+	printf("%s\n", result);
+
+}
+
 int main(int argc ,char * argv[]){
 	//testcase_1();	
 	testcase_2();
 
 	testcase_3();
+	testcase_4();
+	testcase_5();
 	return 0;
 }

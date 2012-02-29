@@ -50,23 +50,31 @@ void cmd_do_prefix(struct io_data_t* p, const char* header)
 	int result_bytes_len=0;
 	char rsps_header[HEADER_BUF_SIZE]={0};	
 	char *result = g_prefix_buf[p->worker_no];
+	char sorting_order[10]={0};
+	enum SortingOrder e_sorting_order;
 	result[0]='\0';
 
-	if(sscanf(header,"prefix %s %d",prefix,&limit)==2){
+	if(sscanf(header,"prefix %s %d %s",prefix,&limit,sorting_order)== 3){
 		if(limit> MAX_PREFIX_RESULT)
 			limit = MAX_PREFIX_RESULT;
-
+		if(strcmp(sorting_order,"asc") == 0){
+			e_sorting_order = ASC;	
+		}else{
+			e_sorting_order = DESC;
+		}
 		pthread_rwlock_rdlock(& g_reader_lock);
-		tst_prefix(g_tst, prefix, result, &result_size, limit);	
+		tst_prefix(g_tst, prefix, result, &result_size, limit, e_sorting_order);	
 		pthread_rwlock_unlock(& g_reader_lock);				
 		
 		result_bytes_len = strlen(result);
 		snprintf(rsps_header,HEADER_BUF_SIZE,"KEYS %d %d\r\n", result_size, result_bytes_len);	
 		append_send_data(p,rsps_header,strlen(rsps_header));
 		append_send_data(p,result,result_bytes_len);	
-	}		
+		append_send_data(p,"END\r\n",strlen("END\r\n"));
 
-	append_send_data(p,"END\r\n",strlen("END\r\n"));
+	}		
+	else
+		append_send_data(p,"ERROR\r\n",strlen("ERROR\r\n"));
 }
 
 void cmd_do_get(struct io_data_t* p, const char* header,int r_sign )
