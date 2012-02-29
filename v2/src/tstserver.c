@@ -43,11 +43,11 @@ int g_shutdown_flag;
 int g_nolog;
 FILE *g_logger;
 bp_t *g_bufpoll[WORKER_COUNT];
-FILE *g_data_file_r[WORKER_COUNT]; //for reading
-FILE *g_data_file_w; //for writing
+FILE *g_data_file_r[WORKER_COUNT];	//for reading
+FILE *g_data_file_w;		//for writing
 FILE *g_binlog_file;
 char g_db_name[256];
-tst_db* g_tst;
+tst_db *g_tst;
 pthread_rwlock_t g_reader_lock;
 pthread_mutex_t g_writer_lock;
 
@@ -263,7 +263,7 @@ do_accept()
 				//printf("%u\n",client_fd);
 				setnonblocking(client_fd);
 				ev.data.ptr = alloc_io_data(client_fd, (struct sockaddr_in *)&client_addr, worker_pointer);
-				ev.events = EPOLLIN ;
+				ev.events = EPOLLIN;
 				epoll_ctl(g_ep_fd[worker_pointer++], EPOLL_CTL_ADD, client_fd, &ev);
 				inet_ntop(AF_INET, &client_addr.sin_addr, ip_buf, sizeof(ip_buf));
 				tstserver_log("[CONN]Connection from %s", ip_buf);
@@ -283,108 +283,112 @@ do_accept()
 	}
 }
 
-static void reload_index()
+static void
+reload_index()
 {
-	char index_file_name[MAX_FILENAME_LEN]={0};
-	snprintf(index_file_name,MAX_FILENAME_LEN,"%s.index",g_db_name);
-	FILE* index_file = fopen(index_file_name,"r");
-	if(index_file>0){
+	char index_file_name[MAX_FILENAME_LEN] = { 0 };
+	snprintf(index_file_name, MAX_FILENAME_LEN, "%s.index", g_db_name);
+	FILE *index_file = fopen(index_file_name, "r");
+	if (index_file > 0) {
 		tstserver_log("reload tst index [OK]");
-		g_tst = (tst_db*)malloc(sizeof(tst_db));
-		fread(g_tst,sizeof(tst_db),1, index_file);
-		g_tst->data = (tst_node*)malloc(sizeof(tst_node) * g_tst->cap);
-		fread(g_tst->data,sizeof(tst_node), g_tst->cap, index_file);
-		fclose(index_file);						
-	}else{
-		g_tst =  create_tst_db();	
+		g_tst = (tst_db *) malloc(sizeof(tst_db));
+		fread(g_tst, sizeof(tst_db), 1, index_file);
+		g_tst->data = (tst_node *) malloc(sizeof(tst_node) * g_tst->cap);
+		fread(g_tst->data, sizeof(tst_node), g_tst->cap, index_file);
+		fclose(index_file);
+	} else {
+		g_tst = create_tst_db();
 		tstserver_log("new tst index in memory, because no index file");
-	}	
+	}
 }
 
-static void replay_binlog()
+static void
+replay_binlog()
 {
 	char key[MAX_KEY_SIZE];
 	int n;
-	uint64 value=0;
-	uint64 counter=0;	
-	int last_success_pos =0;
-	while(feof(g_binlog_file) == 0){
-		if(fread(&n,sizeof(int),1,g_binlog_file)!=1){
+	uint64 value = 0;
+	uint64 counter = 0;
+	int last_success_pos = 0;
+	while (feof(g_binlog_file) == 0) {
+		if (fread(&n, sizeof(int), 1, g_binlog_file) != 1) {
 			break;
 		}
-		if(n<=0){
-			 break;
-		}
-		if(fread(key,sizeof(char),n,g_binlog_file)!=n){
+		if (n <= 0) {
 			break;
 		}
-		key[n]='\0';	
-		if(fread(&value,sizeof(uint64),1,g_binlog_file)!=1){
+		if (fread(key, sizeof(char), n, g_binlog_file) != n) {
 			break;
-		}	
-		if(value>0)
-			tst_put(g_tst,key,value);
+		}
+		key[n] = '\0';
+		if (fread(&value, sizeof(uint64), 1, g_binlog_file) != 1) {
+			break;
+		}
+		if (value > 0)
+			tst_put(g_tst, key, value);
 		else
-			tst_delete(g_tst,key);
+			tst_delete(g_tst, key);
 		counter++;
 		last_success_pos = ftell(g_binlog_file);
-	}	
+	}
 
-	ftruncate(fileno(g_binlog_file),last_success_pos);
-	tstserver_log("binglog replayed,pair count: %d [OK]",counter);
+	ftruncate(fileno(g_binlog_file), last_success_pos);
+	tstserver_log("binglog replayed,pair count: %d [OK]", counter);
 }
 
 
-static void init_data(const char* data_file_name)
+static void
+init_data(const char *data_file_name)
 {
-	char binlog_file_name[MAX_FILENAME_LEN]={0};
+	char binlog_file_name[MAX_FILENAME_LEN] = { 0 };
 	int i;
-	
-	snprintf(g_db_name,MAX_FILENAME_LEN, "%s",data_file_name);		
-	snprintf(binlog_file_name,MAX_FILENAME_LEN, "%s.binlog",data_file_name);
-	g_binlog_file = fopen(binlog_file_name,"a+");	
-	assert(g_binlog_file>0);
-	g_data_file_w = fopen(g_db_name,"a");
-	assert(g_data_file_w>0);
-	if(ftell(g_data_file_w)==0)
-		fwrite("[2012]",sizeof(char),6,g_data_file_w);// 0 position not used
-	for(i=0;i<WORKER_COUNT;i++){
-		g_data_file_r[i] = fopen(g_db_name,"r");
-		assert(g_data_file_r[i]>0);
-	}		
+
+	snprintf(g_db_name, MAX_FILENAME_LEN, "%s", data_file_name);
+	snprintf(binlog_file_name, MAX_FILENAME_LEN, "%s.binlog", data_file_name);
+	g_binlog_file = fopen(binlog_file_name, "a+");
+	assert(g_binlog_file > 0);
+	g_data_file_w = fopen(g_db_name, "a");
+	assert(g_data_file_w > 0);
+	if (ftell(g_data_file_w) == 0)
+		fwrite("[2012]", sizeof(char), 6, g_data_file_w);	// 0 position not used
+	for (i = 0; i < WORKER_COUNT; i++) {
+		g_data_file_r[i] = fopen(g_db_name, "r");
+		assert(g_data_file_r[i] > 0);
+	}
 
 	reload_index();
 	replay_binlog();
 }
 
-static void dump_tst()
+static void
+dump_tst()
 {
 	int i;
-	char index_file_name[MAX_FILENAME_LEN]={0};
-	char tmp_name[MAX_FILENAME_LEN]={0};
-	char binlog_file_name[MAX_FILENAME_LEN]={0};
+	char index_file_name[MAX_FILENAME_LEN] = { 0 };
+	char tmp_name[MAX_FILENAME_LEN] = { 0 };
+	char binlog_file_name[MAX_FILENAME_LEN] = { 0 };
 
-	snprintf(index_file_name,MAX_FILENAME_LEN,"%s.index",g_db_name);
-	snprintf(tmp_name,MAX_FILENAME_LEN,"%s.tmp",index_file_name);
-	snprintf(binlog_file_name,MAX_FILENAME_LEN,"%s.binlog",g_db_name);
+	snprintf(index_file_name, MAX_FILENAME_LEN, "%s.index", g_db_name);
+	snprintf(tmp_name, MAX_FILENAME_LEN, "%s.tmp", index_file_name);
+	snprintf(binlog_file_name, MAX_FILENAME_LEN, "%s.binlog", g_db_name);
 
 	fclose(g_binlog_file);
 	fclose(g_data_file_w);
-	for(i=0;i<WORKER_COUNT;i++){
+	for (i = 0; i < WORKER_COUNT; i++) {
 		fclose(g_data_file_r[i]);
-	}	
+	}
 
-	FILE* tmp_index = fopen(tmp_name,"w");
-	assert(tmp_index>0);
-	fwrite(g_tst,sizeof(tst_db),1,tmp_index);
-	fwrite(g_tst->data,sizeof(tst_node), g_tst->cap,tmp_index);
+	FILE *tmp_index = fopen(tmp_name, "w");
+	assert(tmp_index > 0);
+	fwrite(g_tst, sizeof(tst_db), 1, tmp_index);
+	fwrite(g_tst->data, sizeof(tst_node), g_tst->cap, tmp_index);
 	fclose(tmp_index);
 	tstserver_log("dump to temp index file [OK]");
-	rename(tmp_name, index_file_name); 	
+	rename(tmp_name, index_file_name);
 	tstserver_log("overwrite index file [OK]");
 	remove(binlog_file_name);
-	tstserver_log("remove binlog file[OK]");			
-	
+	tstserver_log("remove binlog file[OK]");
+
 }
 
 int
@@ -438,7 +442,7 @@ main(int argc, char **argv)
 
 	pthread_rwlock_init(&g_reader_lock, NULL);
 	pthread_mutex_init(&g_writer_lock, NULL);
-	
+
 	listen_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (-1 == listen_fd) {
 		perror("listen faild!");
@@ -480,7 +484,7 @@ main(int argc, char **argv)
 	for (i = 0; i < WORKER_COUNT; i++)
 		pthread_join(tid[i], NULL);
 
-	dump_tst();	
+	dump_tst();
 
 	tstserver_log(">> [%d]Bye~", getpid());
 
@@ -585,7 +589,8 @@ has_header(struct io_data_t *p)
 		if ((pos = strstr(q->data, "\n")) != NULL) {
 			found = 1;
 			hd_len += (pos - (q->data));
-			if(hd_len>0)p->header_len = hd_len-1;
+			if (hd_len > 0)
+				p->header_len = hd_len - 1;
 			break;
 		}
 		if (q->next >= 0) {
@@ -599,10 +604,10 @@ has_header(struct io_data_t *p)
 }
 
 static void
-get_body_len(struct io_data_t *p,char* s_head_buf)
+get_body_len(struct io_data_t *p, char *s_head_buf)
 {
 	buffer_t *q;
-	char *header_msg= s_head_buf;
+	char *header_msg = s_head_buf;
 	int start;
 	int body_len = 0;
 	bp_t *mybp;
@@ -629,18 +634,20 @@ get_body_len(struct io_data_t *p,char* s_head_buf)
 	if (start >= p->header_len) {
 		header_msg[p->header_len] = '\0';
 		if (sscanf(header_msg, "set %s %d %d %d", key, &flag, &expire, &value_len) == 4) {
-			if(value_len<0) value_len=0;
-			else if(value_len>VALUE_LIMIT) value_len= VALUE_LIMIT;
+			if (value_len < 0)
+				value_len = 0;
+			else if (value_len > VALUE_LIMIT)
+				value_len = VALUE_LIMIT;
 			body_len = value_len;
-			p->is_write_cmd =1;
-		} 
-		else if (sscanf(header_msg, "cas %s %d %d %d %llu", key, &flag, &expire, &value_len,&sign) == 5) {
-			if(value_len<0) value_len=0;
-			else if(value_len>VALUE_LIMIT) value_len= VALUE_LIMIT;
+			p->is_write_cmd = 1;
+		} else if (sscanf(header_msg, "cas %s %d %d %d %llu", key, &flag, &expire, &value_len, &sign) == 5) {
+			if (value_len < 0)
+				value_len = 0;
+			else if (value_len > VALUE_LIMIT)
+				value_len = VALUE_LIMIT;
 			body_len = value_len;
-			p->is_write_cmd =1;
-		} 
-		else{
+			p->is_write_cmd = 1;
+		} else {
 			p->is_write_cmd = 0;
 		}
 		p->body_len = body_len;
@@ -749,10 +756,11 @@ read_body(struct io_data_t *p, char *body)
 	body[p->body_len] = '\0';
 }
 
-static int starts_with(const char* s1, const char* s2)
+static int
+starts_with(const char *s1, const char *s2)
 {
 	int len_s2 = strlen(s2);
-	if(memcmp(s1,s2,len_s2)==0)
+	if (memcmp(s1, s2, len_s2) == 0)
 		return 1;
 	else
 		return 0;
@@ -761,40 +769,31 @@ static int starts_with(const char* s1, const char* s2)
 static void
 handle_cmd(struct io_data_t *p, char *header, char *body)
 {
-	header[p->header_len]='\0';
-	body[p->body_len]='\0';
+	header[p->header_len] = '\0';
+	body[p->body_len] = '\0';
 	//tstserver_log("header:%s", header);
 	//tstserver_log("body:%s\n", body);
 
 	if (starts_with(header, "set")) {
-		cmd_do_set(p,header,body);	
-	}
-	else if(starts_with(header,"gets")){
-		cmd_do_get(p,header,1);
-	}
-	else if(starts_with(header,"get") ){
-		cmd_do_get(p,header,0);
-	}
-	else if(starts_with(header,"prefix")){
-		cmd_do_prefix(p,header);
-	}
-	else if(starts_with(header,"cas")){
-		cmd_do_cas(p,header,body);
-	}
-	else if(starts_with(header,"delete")){
-		cmd_do_delete(p,header);
-	}
-	else if(starts_with(header,"incr")){
-		cmd_do_incr(p,header);
-	}
-	else if(starts_with(header,"decr")){
-		cmd_do_decr(p,header);
-	}
-	else if(starts_with(header,"quit")){
-		destroy_fd(g_ep_fd[p->worker_no],p->fd,p,4);	
-	}
-	else{
-		append_send_data(p,"ERROR\r\n",7);	
+		cmd_do_set(p, header, body);
+	} else if (starts_with(header, "gets")) {
+		cmd_do_get(p, header, 1);
+	} else if (starts_with(header, "get")) {
+		cmd_do_get(p, header, 0);
+	} else if (starts_with(header, "prefix")) {
+		cmd_do_prefix(p, header);
+	} else if (starts_with(header, "cas")) {
+		cmd_do_cas(p, header, body);
+	} else if (starts_with(header, "delete")) {
+		cmd_do_delete(p, header);
+	} else if (starts_with(header, "incr")) {
+		cmd_do_incr(p, header);
+	} else if (starts_with(header, "decr")) {
+		cmd_do_decr(p, header);
+	} else if (starts_with(header, "quit")) {
+		destroy_fd(g_ep_fd[p->worker_no], p->fd, p, 4);
+	} else {
+		append_send_data(p, "ERROR\r\n", 7);
 	}
 }
 
@@ -807,13 +806,14 @@ fix_buf_len(struct io_data_t *p)
 	} else {
 		p->in_buf_len -= (p->header_len + p->body_len + 2);
 	}
-	if(p->in_buf_len<0) p->in_buf_len=0;
+	if (p->in_buf_len < 0)
+		p->in_buf_len = 0;
 	p->header_len = 0;
 	p->body_len = -1;
 }
 
 static void
-handle_input(int worker_no, struct io_data_t *client_io_ptr, char *s_body_buf,char* s_head_buf)
+handle_input(int worker_no, struct io_data_t *client_io_ptr, char *s_body_buf, char *s_head_buf)
 {
 	struct epoll_event ev;
 	int fd = client_io_ptr->fd;
@@ -827,7 +827,7 @@ handle_input(int worker_no, struct io_data_t *client_io_ptr, char *s_body_buf,ch
 	}
 
 	while (has_header(client_io_ptr)) {
-		get_body_len(client_io_ptr,header);
+		get_body_len(client_io_ptr, header);
 
 		if (client_io_ptr->is_write_cmd == 0 || has_body(client_io_ptr)) {
 			read_header(client_io_ptr, header);
