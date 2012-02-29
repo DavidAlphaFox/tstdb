@@ -1,4 +1,3 @@
-
 = Introduction =
 
 "prefix" is a new command, which does not exist in memcached 
@@ -8,7 +7,7 @@
 request:
 
 {{{
-prefix <key prefix> <limit>\r\n
+prefix <key prefix> <limit> <sorting order>\r\n
 }}}
 
 response:
@@ -24,7 +23,7 @@ END\r\n
 telnet localhost 8402
 ...
 
-prefix haha 10
+prefix haha 10 desc
 KEYS 3 24
 haha/5
 haha/2
