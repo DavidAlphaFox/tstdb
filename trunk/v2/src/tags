@@ -3,8 +3,10 @@
 !_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+!_TAG_PROGRAM_VERSION	5.6	//
+ASC	tst.c	/^	ASC=1,$/;"	e	enum:asc_ord_desc	file:
 BUF_POOL_SIZE	tstserver.c	35;"	d	file:
+DESC	tst.c	/^	DESC=0$/;"	e	enum:asc_ord_desc	file:
 HEADER_BUF_SIZE	cmd_process.c	16;"	d	file:
 MAX_BODY_SIZE	tstserver.c	36;"	d	file:
 MAX_EPOLL_FD	tstserver.c	34;"	d	file:
@@ -18,6 +20,7 @@ alloc_io_data	tstserver.c	/^alloc_io_data(int client_fd, struct sockaddr_in *cli
 append_recv_data	tstserver.c	/^append_recv_data(struct io_data_t *p)$/;"	f	file:
 append_result	tst.c	/^void append_result( const char* key, char* result, int * result_size)$/;"	f	file:
 append_send_data	tstserver.c	/^append_send_data(struct io_data_t *p, const char *data, int data_len)$/;"	f
+asc_ord_desc	tst.c	/^enum asc_ord_desc$/;"	g	file:
 bp_new	buffer_pool.c	/^bp_t* bp_new(unsigned int n_items){$/;"	f
 cmd_do_cas	cmd_process.c	/^void cmd_do_cas(struct io_data_t *p , const char* header,const char* body)$/;"	f
 cmd_do_decr	cmd_process.c	/^void cmd_do_decr(struct io_data_t* p, const char* header)$/;"	f
@@ -30,6 +33,7 @@ create_tst_db	tst.c	/^tst_db *create_tst_db()$/;"	f
 destroy_fd	tstserver.c	/^destroy_fd(int myg_ep_fd, int client_fd, struct io_data_t *data_ptr, int case_no)$/;"	f	file:
 destroy_io_data	tstserver.c	/^destroy_io_data(struct io_data_t *io_data_ptr)$/;"	f	file:
 dfs	tst.c	/^void dfs(tst_db *db, uint32 node, char* result, int* result_size,$/;"	f	file:
+dfs_less	tst.c	/^void dfs_less(tst_db *db, uint32 node, const char *key, char* result, int * result_size, $/;"	f	file:
 do_accept	tstserver.c	/^do_accept()$/;"	f	file:
 do_bind_and_listen	tstserver.c	/^do_bind_and_listen(int port_listening, const char *ip_binding)$/;"	f	file:
 dump_tst	tstserver.c	/^static void dump_tst()$/;"	f	file:
@@ -89,8 +93,10 @@ starts_with	tstserver.c	/^static int starts_with(const char* s1, const char* s2)
 testcase_1	test_tst.c	/^void testcase_1(){$/;"	f
 testcase_2	test_tst.c	/^void testcase_2()$/;"	f
 testcase_3	test_tst.c	/^void testcase_3()$/;"	f
+testcase_4	test_tst.c	/^void testcase_4()$/;"	f
 tst_delete	tst.c	/^void tst_delete(tst_db *db,const char *key)$/;"	f
 tst_get	tst.c	/^uint64 tst_get(tst_db * db, const char *key)$/;"	f
+tst_less	tst.c	/^void tst_less(tst_db *db, const char* key,char* result,$/;"	f
 tst_prefix	tst.c	/^void tst_prefix(tst_db *db, const char* prefix,char* result,$/;"	f
 tst_put	tst.c	/^void tst_put(tst_db * db, const char *key, uint64 value)$/;"	f
 tstserver_log	tstserver.c	/^tstserver_log(const char *fmt, ...)$/;"	f	file:
