@@ -79,6 +79,64 @@ cmd_do_prefix(struct io_data_t *p, const char *header)
 }
 
 void
+cmd_do_less(struct io_data_t *p, const char *header)
+{
+	char prefix[MAX_KEY_SIZE] = { 0 };
+	int limit;
+	int result_size = 0;
+	int result_bytes_len = 0;
+	char rsps_header[HEADER_BUF_SIZE] = { 0 };
+	char *result = g_prefix_buf[p->worker_no];
+	result[0] = '\0';
+
+	if (sscanf(header, "less %s %d", prefix, &limit) == 2) {
+		if (limit > MAX_PREFIX_RESULT)
+			limit = MAX_PREFIX_RESULT;
+
+		pthread_rwlock_rdlock(&g_reader_lock);
+		tst_less(g_tst, prefix, result, &result_size, limit);
+		pthread_rwlock_unlock(&g_reader_lock);
+
+		result_bytes_len = strlen(result);
+		snprintf(rsps_header, HEADER_BUF_SIZE, "KEYS %d %d\r\n", result_size, result_bytes_len);
+		append_send_data(p, rsps_header, strlen(rsps_header));
+		append_send_data(p, result, result_bytes_len);
+		append_send_data(p, "END\r\n", strlen("END\r\n"));
+
+	} else
+		append_send_data(p, "ERROR\r\n", strlen("ERROR\r\n"));
+}
+
+void
+cmd_do_greater(struct io_data_t *p, const char *header)
+{
+	char prefix[MAX_KEY_SIZE] = { 0 };
+	int limit;
+	int result_size = 0;
+	int result_bytes_len = 0;
+	char rsps_header[HEADER_BUF_SIZE] = { 0 };
+	char *result = g_prefix_buf[p->worker_no];
+	result[0] = '\0';
+
+	if (sscanf(header, "greater %s %d", prefix, &limit) == 2) {
+		if (limit > MAX_PREFIX_RESULT)
+			limit = MAX_PREFIX_RESULT;
+
+		pthread_rwlock_rdlock(&g_reader_lock);
+		tst_greater(g_tst, prefix, result, &result_size, limit);
+		pthread_rwlock_unlock(&g_reader_lock);
+
+		result_bytes_len = strlen(result);
+		snprintf(rsps_header, HEADER_BUF_SIZE, "KEYS %d %d\r\n", result_size, result_bytes_len);
+		append_send_data(p, rsps_header, strlen(rsps_header));
+		append_send_data(p, result, result_bytes_len);
+		append_send_data(p, "END\r\n", strlen("END\r\n"));
+
+	} else
+		append_send_data(p, "ERROR\r\n", strlen("ERROR\r\n"));
+}
+
+void
 cmd_do_get(struct io_data_t *p, const char *header, int r_sign)
 {
 	char key[MAX_KEY_SIZE] = { 0 };
