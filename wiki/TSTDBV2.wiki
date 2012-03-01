@@ -5,7 +5,7 @@ Introduction to tstdb v2.
  # pipeline requests support
  # high performance & data persistence ability
  # [http://code.google.com/p/tstdb/wiki/PrefixCommand prefix searching]
- # range searching[http://code.google.com/p/tstdb/wiki/LessCommand less] and [http://code.google.com/p/tstdb/wiki/GreaterCommand greater]
+ # range searching: [http://code.google.com/p/tstdb/wiki/LessCommand less] and [http://code.google.com/p/tstdb/wiki/GreaterCommand greater]
 
 = Build =
 
