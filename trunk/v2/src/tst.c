@@ -390,6 +390,11 @@ dfs_greater(tst_db * db, uint32 node, const char *key, char *result, int *result
 	if (key[0] > c) {
 		dfs_greater(db, db->data[node].right, key, result, result_size, key_buf, d, limit);
 	} else if (key[0] == c) {
+		if(*result_size < limit){
+			if(*(key+1)=='\0'){
+				append_result(key_buf, result, result_size);
+			}
+		}
 		if (*result_size < limit)
 			dfs_greater(db, db->data[node].mid, key + 1, result, result_size, key_buf, d + 1, limit);
 		if (*result_size < limit) {
