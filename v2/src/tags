@@ -3,10 +3,8 @@
 !_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.6	//
-ASC	tst.c	/^	ASC=1,$/;"	e	enum:asc_ord_desc	file:
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 BUF_POOL_SIZE	tstserver.c	35;"	d	file:
-DESC	tst.c	/^	DESC=0$/;"	e	enum:asc_ord_desc	file:
 HEADER_BUF_SIZE	cmd_process.c	16;"	d	file:
 MAX_BODY_SIZE	tstserver.c	36;"	d	file:
 MAX_EPOLL_FD	tstserver.c	34;"	d	file:
@@ -15,41 +13,41 @@ MAX_PREFIX_RESULT	cmd_process.c	18;"	d	file:
 PREFIX_BUF_SIZE	cmd_process.c	19;"	d	file:
 VALUE_BUF_SIZE	cmd_process.c	17;"	d	file:
 VALUE_LIMIT	tstserver.c	37;"	d	file:
-alloc_buf	buffer_pool.c	/^buffer_t* alloc_buf(bp_t* this){$/;"	f
+alloc_buf	buffer_pool.c	/^alloc_buf(bp_t * this)$/;"	f
 alloc_io_data	tstserver.c	/^alloc_io_data(int client_fd, struct sockaddr_in *client_addr, int worker_no)$/;"	f	file:
 append_recv_data	tstserver.c	/^append_recv_data(struct io_data_t *p)$/;"	f	file:
-append_result	tst.c	/^void append_result( const char* key, char* result, int * result_size)$/;"	f	file:
+append_result	tst.c	/^append_result(const char *key, char *result, int *result_size)$/;"	f	file:
 append_send_data	tstserver.c	/^append_send_data(struct io_data_t *p, const char *data, int data_len)$/;"	f
-asc_ord_desc	tst.c	/^enum asc_ord_desc$/;"	g	file:
-bp_new	buffer_pool.c	/^bp_t* bp_new(unsigned int n_items){$/;"	f
-cmd_do_cas	cmd_process.c	/^void cmd_do_cas(struct io_data_t *p , const char* header,const char* body)$/;"	f
-cmd_do_decr	cmd_process.c	/^void cmd_do_decr(struct io_data_t* p, const char* header)$/;"	f
-cmd_do_delete	cmd_process.c	/^void cmd_do_delete(struct io_data_t* p, const char* header )$/;"	f
-cmd_do_get	cmd_process.c	/^void cmd_do_get(struct io_data_t* p, const char* header,int r_sign )$/;"	f
-cmd_do_incr	cmd_process.c	/^void cmd_do_incr(struct io_data_t* p, const char* header)$/;"	f
-cmd_do_prefix	cmd_process.c	/^void cmd_do_prefix(struct io_data_t* p, const char* header) $/;"	f
-cmd_do_set	cmd_process.c	/^void cmd_do_set(struct io_data_t* p, const char* header, const char* body )$/;"	f
-create_tst_db	tst.c	/^tst_db *create_tst_db()$/;"	f
+bp_new	buffer_pool.c	/^bp_new(unsigned int n_items)$/;"	f
+cmd_do_cas	cmd_process.c	/^cmd_do_cas(struct io_data_t *p, const char *header, const char *body)$/;"	f
+cmd_do_decr	cmd_process.c	/^cmd_do_decr(struct io_data_t *p, const char *header)$/;"	f
+cmd_do_delete	cmd_process.c	/^cmd_do_delete(struct io_data_t *p, const char *header)$/;"	f
+cmd_do_get	cmd_process.c	/^cmd_do_get(struct io_data_t *p, const char *header, int r_sign)$/;"	f
+cmd_do_incr	cmd_process.c	/^cmd_do_incr(struct io_data_t *p, const char *header)$/;"	f
+cmd_do_prefix	cmd_process.c	/^cmd_do_prefix(struct io_data_t *p, const char *header)$/;"	f
+cmd_do_set	cmd_process.c	/^cmd_do_set(struct io_data_t *p, const char *header, const char *body)$/;"	f
+create_tst_db	tst.c	/^create_tst_db()$/;"	f
 destroy_fd	tstserver.c	/^destroy_fd(int myg_ep_fd, int client_fd, struct io_data_t *data_ptr, int case_no)$/;"	f	file:
 destroy_io_data	tstserver.c	/^destroy_io_data(struct io_data_t *io_data_ptr)$/;"	f	file:
-dfs	tst.c	/^void dfs(tst_db *db, uint32 node, char* result, int* result_size,$/;"	f	file:
-dfs_less	tst.c	/^void dfs_less(tst_db *db, uint32 node, const char *key, char* result, int * result_size, $/;"	f	file:
+dfs	tst.c	/^dfs(tst_db * db, uint32 node, char *result, int *result_size, char key_buf[], int d, int limit, enum SortingOrder sorting_order)$/;"	f	file:
+dfs_greater	tst.c	/^dfs_greater(tst_db * db, uint32 node, const char *key, char *result, int *result_size, char key_buf[], int d, int limit)$/;"	f	file:
+dfs_less	tst.c	/^dfs_less(tst_db * db, uint32 node, const char *key, char *result, int *result_size, char key_buf[], int d, int limit)$/;"	f	file:
 do_accept	tstserver.c	/^do_accept()$/;"	f	file:
 do_bind_and_listen	tstserver.c	/^do_bind_and_listen(int port_listening, const char *ip_binding)$/;"	f	file:
-dump_tst	tstserver.c	/^static void dump_tst()$/;"	f	file:
-ends_with	cmd_process.c	/^static int ends_with(const char* s1, const char* s2)$/;"	f	file:
-ensure_enough_space	tst.c	/^static void ensure_enough_space(tst_db * db)$/;"	f	file:
+dump_tst	tstserver.c	/^dump_tst()$/;"	f	file:
+ends_with	cmd_process.c	/^ends_with(const char *s1, const char *s2)$/;"	f	file:
+ensure_enough_space	tst.c	/^ensure_enough_space(tst_db * db)$/;"	f	file:
 exit_hook	tstserver.c	/^exit_hook(int number)$/;"	f	file:
 fix_buf_len	tstserver.c	/^fix_buf_len(struct io_data_t *p)$/;"	f	file:
-free_buf	buffer_pool.c	/^void free_buf(bp_t* this , buffer_t* buf){$/;"	f
+free_buf	buffer_pool.c	/^free_buf(bp_t * this, buffer_t * buf)$/;"	f
 free_in_buf_list	tstserver.c	/^free_in_buf_list(struct io_data_t *p)$/;"	f	file:
-free_node	tst.c	/^static void free_node(tst_db *db, uint32 node)$/;"	f	file:
+free_node	tst.c	/^free_node(tst_db * db, uint32 node)$/;"	f	file:
 free_out_buf_list	tstserver.c	/^free_out_buf_list(struct io_data_t *p)$/;"	f	file:
-free_tst_db	tst.c	/^void free_tst_db(tst_db * db)$/;"	f
+free_tst_db	tst.c	/^free_tst_db(tst_db * db)$/;"	f
 g_binlog_file	tstserver.c	/^FILE *g_binlog_file;$/;"	v
 g_bufpoll	tstserver.c	/^bp_t *g_bufpoll[WORKER_COUNT];$/;"	v
-g_data_file_r	tstserver.c	/^FILE *g_data_file_r[WORKER_COUNT]; \/\/for reading$/;"	v
-g_data_file_w	tstserver.c	/^FILE *g_data_file_w; \/\/for writing$/;"	v
+g_data_file_r	tstserver.c	/^FILE *g_data_file_r[WORKER_COUNT];	\/\/for reading$/;"	v
+g_data_file_w	tstserver.c	/^FILE *g_data_file_w;		\/\/for writing$/;"	v
 g_db_name	tstserver.c	/^char g_db_name[256];$/;"	v
 g_delay	tstserver.c	/^int g_delay;$/;"	v
 g_ep_fd	tstserver.c	/^int g_ep_fd[WORKER_COUNT], listen_fd;$/;"	v
@@ -59,45 +57,48 @@ g_nolog	tstserver.c	/^int g_nolog;$/;"	v
 g_prefix_buf	cmd_process.c	/^char g_prefix_buf[WORKER_COUNT][PREFIX_BUF_SIZE];$/;"	v
 g_reader_lock	tstserver.c	/^pthread_rwlock_t g_reader_lock;$/;"	v
 g_shutdown_flag	tstserver.c	/^int g_shutdown_flag;$/;"	v
-g_tst	tstserver.c	/^tst_db* g_tst;$/;"	v
+g_tst	tstserver.c	/^tst_db *g_tst;$/;"	v
 g_value_buf	cmd_process.c	/^char g_value_buf[WORKER_COUNT][VALUE_BUF_SIZE];$/;"	v
 g_writer_lock	tstserver.c	/^pthread_mutex_t g_writer_lock;$/;"	v
-get_body_len	tstserver.c	/^get_body_len(struct io_data_t *p,char* s_head_buf)$/;"	f	file:
-get_buf	buffer_pool.c	/^buffer_t* get_buf(bp_t *this,unsigned int nth){$/;"	f
+get_body_len	tstserver.c	/^get_body_len(struct io_data_t *p, char *s_head_buf)$/;"	f	file:
+get_buf	buffer_pool.c	/^get_buf(bp_t * this, unsigned int nth)$/;"	f
 handle_cmd	tstserver.c	/^handle_cmd(struct io_data_t *p, char *header, char *body)$/;"	f	file:
 handle_core	tstserver.c	/^handle_core(void *param)$/;"	f	file:
-handle_input	tstserver.c	/^handle_input(int worker_no, struct io_data_t *client_io_ptr, char *s_body_buf,char* s_head_buf)$/;"	f	file:
+handle_input	tstserver.c	/^handle_input(int worker_no, struct io_data_t *client_io_ptr, char *s_body_buf, char *s_head_buf)$/;"	f	file:
 handle_output	tstserver.c	/^handle_output(int worker_no, struct io_data_t *client_io_ptr)$/;"	f	file:
 has_body	tstserver.c	/^has_body(struct io_data_t *p)$/;"	f	file:
 has_header	tstserver.c	/^has_header(struct io_data_t *p)$/;"	f	file:
-incr_or_decr	cmd_process.c	/^static void incr_or_decr(struct io_data_t*p ,const char* header,int is_decr)$/;"	f	file:
-init_data	tstserver.c	/^static void init_data(const char* data_file_name)$/;"	f	file:
-insert	tst.c	/^static uint32 insert(tst_db * db, uint32 node, const char *s, uint64 value,$/;"	f	file:
+incr_or_decr	cmd_process.c	/^incr_or_decr(struct io_data_t *p, const char *header, int is_decr)$/;"	f	file:
+init_data	tstserver.c	/^init_data(const char *data_file_name)$/;"	f	file:
+insert	tst.c	/^insert(tst_db * db, uint32 node, const char *s, uint64 value, int d, int len_of_s, uint32 parent)$/;"	f	file:
 insert_batch	test_tst.c	/^void insert_batch(tst_db* db, int total){$/;"	f
 listen_fd	tstserver.c	/^int g_ep_fd[WORKER_COUNT], listen_fd;$/;"	v
 main	test_tst.c	/^int main(int argc ,char * argv[]){$/;"	f
 main	tstserver.c	/^main(int argc, char **argv)$/;"	f
-new_node	tst.c	/^static uint32 new_node(tst_db * db)$/;"	f	file:
-new_tst_db	tst.c	/^static tst_db *new_tst_db(uint32 cap)$/;"	f	file:
+my_tst_prefix	test_tst.c	/^void my_tst_prefix(tst_db* db,const char* key,char * result,int* result_size,int limit)$/;"	f
+new_node	tst.c	/^new_node(tst_db * db)$/;"	f	file:
+new_tst_db	tst.c	/^new_tst_db(uint32 cap)$/;"	f	file:
 output	test_tst.c	/^void output(tst_db* db){$/;"	f
 parse_args	tstserver.c	/^parse_args(int argc, char *argv[], char **ip_binding, int *port_listening, char **data_file, char **log_file)$/;"	f	file:
 read_body	tstserver.c	/^read_body(struct io_data_t *p, char *body)$/;"	f	file:
 read_header	tstserver.c	/^read_header(struct io_data_t *p, char *header)$/;"	f	file:
-reload_index	tstserver.c	/^static void reload_index()$/;"	f	file:
-remove_node	tst.c	/^static uint32 remove_node(tst_db * db, uint32 node)$/;"	f	file:
-replay_binlog	tstserver.c	/^static void replay_binlog()$/;"	f	file:
-search	tst.c	/^static uint32 search(tst_db * db,  const char *key, int len_of_s)$/;"	f	file:
-search_with_path	tst.c	/^static uint32 search_with_path(tst_db * db,  const char *key, int len_of_s,char* path)$/;"	f	file:
+reload_index	tstserver.c	/^reload_index()$/;"	f	file:
+remove_node	tst.c	/^remove_node(tst_db * db, uint32 node)$/;"	f	file:
+replay_binlog	tstserver.c	/^replay_binlog()$/;"	f	file:
+search	tst.c	/^search(tst_db * db, const char *key, int len_of_s)$/;"	f	file:
+search_with_path	tst.c	/^search_with_path(tst_db * db, const char *key, int len_of_s, char *path)$/;"	f	file:
 setnonblocking	tstserver.c	/^setnonblocking(int fd)$/;"	f	file:
-starts_with	tstserver.c	/^static int starts_with(const char* s1, const char* s2)$/;"	f	file:
+starts_with	tstserver.c	/^starts_with(const char *s1, const char *s2)$/;"	f	file:
 testcase_1	test_tst.c	/^void testcase_1(){$/;"	f
 testcase_2	test_tst.c	/^void testcase_2()$/;"	f
 testcase_3	test_tst.c	/^void testcase_3()$/;"	f
 testcase_4	test_tst.c	/^void testcase_4()$/;"	f
-tst_delete	tst.c	/^void tst_delete(tst_db *db,const char *key)$/;"	f
-tst_get	tst.c	/^uint64 tst_get(tst_db * db, const char *key)$/;"	f
-tst_less	tst.c	/^void tst_less(tst_db *db, const char* key,char* result,$/;"	f
-tst_prefix	tst.c	/^void tst_prefix(tst_db *db, const char* prefix,char* result,$/;"	f
-tst_put	tst.c	/^void tst_put(tst_db * db, const char *key, uint64 value)$/;"	f
+testcase_5	test_tst.c	/^void testcase_5()$/;"	f
+tst_delete	tst.c	/^tst_delete(tst_db * db, const char *key)$/;"	f
+tst_get	tst.c	/^tst_get(tst_db * db, const char *key)$/;"	f
+tst_greater	tst.c	/^tst_greater(tst_db * db, const char *key, char *result, int *result_size, int limit)$/;"	f
+tst_less	tst.c	/^tst_less(tst_db * db, const char *key, char *result, int *result_size, int limit)$/;"	f
+tst_prefix	tst.c	/^tst_prefix(tst_db * db, const char *prefix, char *result, int *result_size, int limit, enum SortingOrder sorting_order)$/;"	f
+tst_put	tst.c	/^tst_put(tst_db * db, const char *key, uint64 value)$/;"	f
 tstserver_log	tstserver.c	/^tstserver_log(const char *fmt, ...)$/;"	f	file:
 usage	tstserver.c	/^usage()$/;"	f	file:
