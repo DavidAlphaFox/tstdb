@@ -805,6 +805,46 @@ class Client(local):
             except (_ConnectionDeadError, socket.error), msg:
                 server.mark_dead(msg)
             return 0
+    def _less_greater(self, cmd, prefix,limit):
+        self.check_key(prefix)
+        server, key = self._get_server(prefix)
+        if not server:
+            return None
+
+        def _unsafe_prefix():
+            self._statlog(cmd)
+            value = ''
+            try:
+                server.send_cmd("%s %s %d" % (cmd, key, limit))
+                r_size, bytes_len = self._expectkeys(server)
+
+                if r_size==0:
+                    server.expect("END")
+                    return [] 
+                try:
+                    value = server.recv(bytes_len)
+                    #print value
+                finally:
+                    server.expect("END")
+            except (_Error, socket.error), msg:
+                if isinstance(msg, tuple): msg = msg[1]
+                server.mark_dead(msg)
+                return None
+            value = value.split("\r\n")
+            del value[-1] #trim the last \r\n
+            return value
+
+        try:
+            return _unsafe_prefix()
+        except _ConnectionDeadError:
+            # retry once
+            try:
+                if server.connect():
+                    return _unsafe_prefix()
+                return None
+            except (_ConnectionDeadError, socket.error), msg:
+                server.mark_dead(msg)
+            return None
 
     def _prefix(self, cmd, prefix,limit,sorting_order):
         self.check_key(prefix)
@@ -898,6 +938,21 @@ class Client(local):
         @return: a list of keys
         '''
         return self._prefix('prefix',prefix,limit,sorting_order)
+
+    def less(self,key,limit=10000):
+        '''Retrieves lots of keys which is less or equal than @key, 
+        at most @limit keys will return
+        @return: a list of keys
+        '''
+        return self._less_greater('less',key,limit)
+
+    def greater(self,key,limit=10000):
+        '''Retrieves lots of keys which is greater or equal than @key, 
+        at most @limit keys will return
+        @return: a list of keys
+        '''
+
+        return self._less_greater('greater',key,limit)
 
     def get(self, key):
         '''Retrieves a key from the memcache.
