@@ -782,7 +782,12 @@ handle_cmd(struct io_data_t *p, char *header, char *body)
 		cmd_do_get(p, header, 0);
 	} else if (starts_with(header, "prefix")) {
 		cmd_do_prefix(p, header);
-	} else if (starts_with(header, "cas")) {
+	} else if(starts_with(header,"less")){
+		cmd_do_less(p,header);
+	} else if(starts_with(header,"greater")){
+		cmd_do_greater(p,header);
+	}
+	else if (starts_with(header, "cas")) {
 		cmd_do_cas(p, header, body);
 	} else if (starts_with(header, "delete")) {
 		cmd_do_delete(p, header);

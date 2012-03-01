@@ -5,6 +5,10 @@ void cmd_do_get(struct io_data_t* p, const char* header ,int r_sign); //r_sign: 
 
 void cmd_do_prefix(struct io_data_t* p, const char* header); 
 
+void cmd_do_less(struct io_data_t* p, const char* header); 
+
+void cmd_do_greater(struct io_data_t* p, const char* header); 
+
 void cmd_do_set(struct io_data_t* p, const char* header, const char* body );
 
 void cmd_do_delete(struct io_data_t* p, const char* header );
