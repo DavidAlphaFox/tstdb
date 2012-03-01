@@ -3,7 +3,7 @@
 !_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+!_TAG_PROGRAM_VERSION	5.6	//
 BUF_POOL_SIZE	tstserver.c	35;"	d	file:
 HEADER_BUF_SIZE	cmd_process.c	16;"	d	file:
 MAX_BODY_SIZE	tstserver.c	36;"	d	file:
@@ -23,7 +23,9 @@ cmd_do_cas	cmd_process.c	/^cmd_do_cas(struct io_data_t *p, const char *header, c
 cmd_do_decr	cmd_process.c	/^cmd_do_decr(struct io_data_t *p, const char *header)$/;"	f
 cmd_do_delete	cmd_process.c	/^cmd_do_delete(struct io_data_t *p, const char *header)$/;"	f
 cmd_do_get	cmd_process.c	/^cmd_do_get(struct io_data_t *p, const char *header, int r_sign)$/;"	f
+cmd_do_greater	cmd_process.c	/^cmd_do_greater(struct io_data_t *p, const char *header)$/;"	f
 cmd_do_incr	cmd_process.c	/^cmd_do_incr(struct io_data_t *p, const char *header)$/;"	f
+cmd_do_less	cmd_process.c	/^cmd_do_less(struct io_data_t *p, const char *header)$/;"	f
 cmd_do_prefix	cmd_process.c	/^cmd_do_prefix(struct io_data_t *p, const char *header)$/;"	f
 cmd_do_set	cmd_process.c	/^cmd_do_set(struct io_data_t *p, const char *header, const char *body)$/;"	f
 create_tst_db	tst.c	/^create_tst_db()$/;"	f
