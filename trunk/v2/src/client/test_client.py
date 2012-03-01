@@ -16,4 +16,6 @@ tst.set('haha/1',123)
 tst.set('haha/2',456)
 tst.set('haha/5','xyz')
 print tst.prefix('haha')
+print tst.less('haha/2')
+print tst.greater('haha/2')
 
