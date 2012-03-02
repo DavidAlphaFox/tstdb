@@ -20,6 +20,12 @@ then
 	exit
 fi
 
+if [ ! -e $BASEDIR/bin/tstserver ]
+then
+	echo "[FAILED] please build tstdb first: cd src, an then make."
+	exit
+fi
+
 tst_start(){
 	cmd="$BASEDIR/bin/tstserver -f$DATA_FILE -l$IP_ADDR -p$PORT -g$LOG_FILE $NOLOG"
 	$cmd >$BASEDIR"/log/stdout.log" 2>&1 & 

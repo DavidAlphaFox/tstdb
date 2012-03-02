@@ -811,3 +811,96 @@
 [22053] 02 Mar 21:10:55 overwrite index file [OK]
 [22053] 02 Mar 21:10:55 remove binlog file[OK]
 [22053] 02 Mar 21:10:55 >> [22053]Bye~
+[22134] 02 Mar 21:12:38 >> IP listening:0.0.0.0
+[22134] 02 Mar 21:12:38 >> port: 8402
+[22134] 02 Mar 21:12:38 >> data_file: data/tst.db
+[22134] 02 Mar 21:12:38 >> reponse delay(MS): 0
+[22134] 02 Mar 21:12:38 >> log file: log/tstserver.log
+[22134] 02 Mar 21:12:38 >> no log: 0
+[22134] 02 Mar 21:12:38 reload tst index [OK]
+[22134] 02 Mar 21:12:38 binglog replayed,pair count: 0 [OK]
+[22134] 02 Mar 21:12:40 >> [22134]will shutdown...
+[22134] 02 Mar 21:12:40 >> [22134]waiting worker thread....
+[22134] 02 Mar 21:12:40 dump to temp index file [OK]
+[22134] 02 Mar 21:12:40 overwrite index file [OK]
+[22134] 02 Mar 21:12:40 remove binlog file[OK]
+[22134] 02 Mar 21:12:40 >> [22134]Bye~
+[22220] 02 Mar 21:17:18 >> IP listening:0.0.0.0
+[22220] 02 Mar 21:17:18 >> port: 8402
+[22220] 02 Mar 21:17:18 >> data_file: data/tst.db
+[22220] 02 Mar 21:17:18 >> reponse delay(MS): 0
+[22220] 02 Mar 21:17:18 >> log file: log/tstserver.log
+[22220] 02 Mar 21:17:18 >> no log: 0
+[22220] 02 Mar 21:17:18 new tst index in memory, because no index file
+[22220] 02 Mar 21:17:18 binglog replayed,pair count: 0 [OK]
+[22220] 02 Mar 21:17:33 [CONN]Connection from 0.0.0.0
+[22220] 02 Mar 21:18:31 [BYE]: 0.0.0.0, 4
+[22220] 02 Mar 21:19:31 [CONN]Connection from 127.0.0.1
+[22220] 02 Mar 21:20:43 [BYE]: 127.0.0.1, 2
+[22220] 02 Mar 21:20:51 >> [22220]will shutdown...
+[22220] 02 Mar 21:20:51 >> [22220]waiting worker thread....
+[22220] 02 Mar 21:20:52 >> [22220]will shutdown...
+[22220] 02 Mar 21:20:52 dump to temp index file [OK]
+[22220] 02 Mar 21:20:52 overwrite index file [OK]
+[22220] 02 Mar 21:20:52 remove binlog file[OK]
+[22220] 02 Mar 21:20:52 >> [22220]Bye~
+[22333] 02 Mar 21:21:45 >> IP listening:0.0.0.0
+[22333] 02 Mar 21:21:45 >> port: 8402
+[22333] 02 Mar 21:21:45 >> data_file: data/tst.db
+[22333] 02 Mar 21:21:45 >> reponse delay(MS): 0
+[22333] 02 Mar 21:21:45 >> log file: log/tstserver.log
+[22333] 02 Mar 21:21:45 >> no log: 0
+[22333] 02 Mar 21:21:45 reload tst index [OK]
+[22333] 02 Mar 21:21:46 binglog replayed,pair count: 0 [OK]
+[22333] 02 Mar 21:21:48 [CONN]Connection from 0.0.0.0
+[22333] 02 Mar 21:21:56 [BYE]: 0.0.0.0, 2
+[22333] 02 Mar 21:26:04 >> [22333]will shutdown...
+[22333] 02 Mar 21:26:04 >> [22333]waiting worker thread....
+[22333] 02 Mar 21:26:04 dump to temp index file [OK]
+[22333] 02 Mar 21:26:04 overwrite index file [OK]
+[22333] 02 Mar 21:26:04 remove binlog file[OK]
+[22333] 02 Mar 21:26:04 >> [22333]Bye~
+[22677] 02 Mar 21:35:24 >> IP listening:0.0.0.0
+[22677] 02 Mar 21:35:24 >> port: 8402
+[22677] 02 Mar 21:35:24 >> data_file: data/tst.db
+[22677] 02 Mar 21:35:24 >> reponse delay(MS): 0
+[22677] 02 Mar 21:35:24 >> log file: log/tstserver.log
+[22677] 02 Mar 21:35:24 >> no log: 0
+[22677] 02 Mar 21:35:24 new tst index in memory, because no index file
+[22677] 02 Mar 21:35:24 binglog replayed,pair count: 0 [OK]
+[22677] 02 Mar 21:36:47 >> [22677]will shutdown...
+[22677] 02 Mar 21:36:47 >> [22677]waiting worker thread....
+[22677] 02 Mar 21:36:47 dump to temp index file [OK]
+[22677] 02 Mar 21:36:47 overwrite index file [OK]
+[22677] 02 Mar 21:36:47 remove binlog file[OK]
+[22677] 02 Mar 21:36:47 >> [22677]Bye~
+[23411] 02 Mar 21:55:48 >> IP listening:0.0.0.0
+[23411] 02 Mar 21:55:48 >> port: 8402
+[23411] 02 Mar 21:55:48 >> data_file: data/tst.db
+[23411] 02 Mar 21:55:48 >> reponse delay(MS): 0
+[23411] 02 Mar 21:55:48 >> log file: log/tstserver.log
+[23411] 02 Mar 21:55:48 >> no log: 0
+[23411] 02 Mar 21:55:48 reload tst index [OK]
+[23411] 02 Mar 21:55:48 binglog replayed,pair count: 0 [OK]
+[23411] 02 Mar 21:55:52 >> [23411]will shutdown...
+[23411] 02 Mar 21:55:52 >> [23411]waiting worker thread....
+[23411] 02 Mar 21:55:53 dump to temp index file [OK]
+[23411] 02 Mar 21:55:53 overwrite index file [OK]
+[23411] 02 Mar 21:55:53 remove binlog file[OK]
+[23411] 02 Mar 21:55:53 >> [23411]Bye~
+[23503] 02 Mar 21:56:17 >> IP listening:0.0.0.0
+[23503] 02 Mar 21:56:17 >> port: 8402
+[23503] 02 Mar 21:56:17 >> data_file: data/tst.db
+[23503] 02 Mar 21:56:17 >> reponse delay(MS): 0
+[23503] 02 Mar 21:56:17 >> log file: log/tstserver.log
+[23503] 02 Mar 21:56:17 >> no log: 0
+[23503] 02 Mar 21:56:17 reload tst index [OK]
+[23503] 02 Mar 21:56:17 binglog replayed,pair count: 0 [OK]
+[23503] 02 Mar 21:56:24 [CONN]Connection from 0.0.0.0
+[23503] 02 Mar 21:57:06 [BYE]: 0.0.0.0, 2
+[23503] 02 Mar 21:57:08 >> [23503]will shutdown...
+[23503] 02 Mar 21:57:08 >> [23503]waiting worker thread....
+[23503] 02 Mar 21:57:09 dump to temp index file [OK]
+[23503] 02 Mar 21:57:09 overwrite index file [OK]
+[23503] 02 Mar 21:57:09 remove binlog file[OK]
+[23503] 02 Mar 21:57:09 >> [23503]Bye~
