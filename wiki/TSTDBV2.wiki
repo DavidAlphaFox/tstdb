@@ -12,6 +12,7 @@ Introduction to tstdb v2.
 == check out source ==
 
  * svn co http://tstdb.googlecode.com/svn/trunk/v2/ tstdb
+ * or go to [http://code.google.com/p/tstdb/downloads/list] to download the source package, and then unpack it with 'tar -xzf'.
 
 == compile ==
 
