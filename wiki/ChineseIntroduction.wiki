@@ -1,10 +1,10 @@
 这个版本的主要改进包括： 
 
-1. 加入了prefix search和range query的支持 
-2. 更好低兼容memcached，加入了incr/derc/gets/cas操作 
-3. 改进了服务器的buffer管理，更加稳定 
-4. 改进了数据持久化机制，除了日志重放外还加上了磁盘镜像reload功能，使得服务重启时数据加载更快 
-5. 支持pipeline请求，支持noreply的异步set操作 
+ # 加入了prefix search和range query的支持 
+ # 更好低兼容memcached，加入了incr/derc/gets/cas操作 
+ # 改进了服务器的buffer管理，更加稳定 
+ # 改进了数据持久化机制，除了日志重放外还加上了磁盘镜像reload功能，使得服务重启时数据加载更快 
+ # 支持pipeline请求，支持noreply的异步set操作 
 
 目前，您可以使用任意的memcached客户端来访问tstdb。 
 如果您需要使用prefix search等功能的话，目前只有一个python客户端pytst可用。不过，很容易扩展到其他语言。 
