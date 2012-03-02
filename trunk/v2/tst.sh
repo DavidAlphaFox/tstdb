@@ -1,9 +1,24 @@
 #!/usr/bin/env bash
 BASEDIR=$(dirname $0)
 
+if [ ! -e $BASEDIR"/conf/tstserver.conf" ]
+then
+	echo "[FAILED] '$BASEDIR/conf/tstserver.conf'" does not exist, please check it. 
+	exit
+fi
+
 source $BASEDIR"/conf/tstserver.conf"
 
+
 cd $BASEDIR
+
+DATA_DIR=$(dirname $DATA_FILE)
+
+if [ ! -e $DATA_DIR ]
+then
+	echo "[FAILED] data directory '$DATA_DIR' does not exist, please check it."
+	exit
+fi
 
 tst_start(){
 	cmd="$BASEDIR/bin/tstserver -f$DATA_FILE -l$IP_ADDR -p$PORT -g$LOG_FILE $NOLOG"
