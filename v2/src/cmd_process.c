@@ -136,6 +136,25 @@ cmd_do_greater(struct io_data_t *p, const char *header)
 		append_send_data(p, "ERROR\r\n", strlen("ERROR\r\n"));
 }
 
+static void
+delete_expire_value(char* key)
+{
+	int key_len = strlen(key);
+	uint64 delete_flag = 0;
+
+	pthread_mutex_lock(&g_writer_lock);
+	fwrite(&key_len, sizeof(int), 1, g_binlog_file);
+	fwrite(key, sizeof(char), key_len, g_binlog_file);
+	fwrite(&delete_flag, sizeof(uint64), 1, g_binlog_file);
+	fflush(g_binlog_file);
+
+	pthread_rwlock_wrlock(&g_reader_lock);
+	tst_delete(g_tst, key);
+	pthread_rwlock_unlock(&g_reader_lock);
+
+	pthread_mutex_unlock(&g_writer_lock);
+}
+
 void
 cmd_do_get(struct io_data_t *p, const char *header, int r_sign)
 {
@@ -143,7 +162,7 @@ cmd_do_get(struct io_data_t *p, const char *header, int r_sign)
 	int tmp[3], body_len, flag, expire;
 	int total = 0;
 	const char *ptr = header;
-	int span;
+	int span,current_time;
 	uint64 value_offset;
 
 	ptr += strcspn(ptr, " ");
@@ -167,6 +186,13 @@ cmd_do_get(struct io_data_t *p, const char *header, int r_sign)
 			body_len = tmp[0];
 			flag = tmp[1];
 			expire = tmp[2];
+			if(expire > 0){
+				current_time = (int)time(NULL);
+				if(expire <= current_time){ //value expired
+					delete_expire_value(key);
+					body_len = -1 ;//to walk around nex if
+				}
+			} 
 			if (body_len >= 0) {
 				if (r_sign == 0) {
 					total += snprintf(g_value_buf[p->worker_no] + total, VALUE_BUF_SIZE, "VALUE %s %d %d\r\n", key, flag, body_len);
@@ -265,6 +291,9 @@ cmd_do_set(struct io_data_t *p, const char *header, const char *body)
 	tmp[0] = body_len;
 	tmp[1] = flag;
 	tmp[2] = expire;
+	if(expire>0){ //value may expire
+		tmp[2] += time(NULL);
+	}
 	fwrite(tmp, sizeof(int), 3, g_data_file_w);
 	fwrite(body, sizeof(char), body_len, g_data_file_w);
 	fflush(g_data_file_w);
@@ -287,6 +316,8 @@ cmd_do_set(struct io_data_t *p, const char *header, const char *body)
 		append_send_data(p, msg, strlen(msg));
 	}
 }
+
+
 
 void
 cmd_do_delete(struct io_data_t *p, const char *header)
