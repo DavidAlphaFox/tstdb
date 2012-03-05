@@ -377,7 +377,7 @@ dump_tst()
 	for (i = 0; i < WORKER_COUNT; i++) {
 		fclose(g_data_file_r[i]);
 	}
-
+	tstserver_log("begin dumping ...");
 	FILE *tmp_index = fopen(tmp_name, "w");
 	assert(tmp_index > 0);
 	fwrite(g_tst, sizeof(tst_db), 1, tmp_index);
